@@ -1,0 +1,13 @@
+.cliente-admin-dashboard {
+    display: flex;
+    min-height: 100vh;
+    background: #f5f7fa;
+  }
+  
+  .cliente-admin-content {
+    flex-grow: 1;
+    padding: 30px;
+    overflow-y: auto;
+    background: #f5f7fa;
+  }
+  

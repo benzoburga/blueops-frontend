@@ -1,0 +1,45 @@
+/* Evita saltos raros de tabla */
+.table-container table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Anchos razonables por columna (ajusta a gusto) */
+.table-container th:nth-child(1),
+.table-container td:nth-child(1) { /* Nombre */
+  width: 32%;
+}
+.table-container th:nth-child(2),
+.table-container td:nth-child(2) { /* Ruta */
+  width: 36%;
+}
+.table-container th:nth-child(3),
+.table-container td:nth-child(3), /* Tipo */
+.table-container th:nth-child(4),
+.table-container td:nth-child(4), /* Versión */
+.table-container th:nth-child(5),
+.table-container td:nth-child(5) { /* Cliente */
+  width: 10%;
+}
+.table-container th:nth-child(6),
+.table-container td:nth-child(6) { /* Acciones */
+  width: 6%;
+}
+
+/* Cortar textos largos con … */
+.table-container td,
+.table-container th {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.archivo-cell .archivo-nombre {
+  display: inline-block;
+  max-width: 95%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.clickable-row { cursor: pointer; }

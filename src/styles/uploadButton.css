@@ -1,0 +1,48 @@
+.button-container {
+  display: flex;
+  gap: 15px;
+}
+
+.upload-card {
+  background-color: #dde6ed;
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  transition: transform 0.1s;
+  cursor: pointer;
+  width: 60px;
+  height: 60px;
+  margin-top: 3px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-card:hover {
+  transform: translateY(-5px);
+}
+
+.icon-container {
+  font-size: 2.5rem;
+  color: #526d82;
+  margin-bottom: 8px;
+}
+
+
+.upload-card:hover {
+  transform: translateY(-5px);
+}
+
+.icon-container {
+  font-size: 2.5rem; /* Reducción del tamaño del ícono */
+  color: #526d82;
+  margin-bottom: 8px;
+}
+
+.upload-card__label p {
+  color: #526d82;
+  font-size: 1rem;
+  font-weight: bold;
+}

@@ -1,0 +1,75 @@
+.perfil-layout {
+    padding: 30px 40px 40px 20px; /* 👈 disminuye padding izquierdo */
+    background-color: #ffffff;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .perfil-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #27374d;
+    margin-bottom: 25px;
+  }
+  
+  .perfil-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 100%; /* 🔧 permite que se extienda al ancho del contenedor */
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .form-group label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #333;
+  }
+  
+  .form-group input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box; /* ✅ incluye padding/border en el width */
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #f8f9fa;
+    color: #333;
+    font-size: 15px;
+  }
+  
+  
+  .input-riesgo-alto {
+    border: 1px solid #dc3545;
+    background-color: #ffe2e2;
+    color: #a30000;
+    font-weight: bold;
+  }
+  
+  .input-riesgo-bajo {
+    border: 1px solid #28a745;
+    background-color: #e2f7e2;
+    color: #1a661a;
+    font-weight: bold;
+  }
+  
+  .input-iperc-si {
+    border: 1px solid #007bff;
+    background-color: #e6f0ff;
+    color: #004a99;
+    font-weight: bold;
+  }
+  
+  .input-iperc-no {
+    border: 1px solid #adb5bd;
+    background-color: #f1f3f5;
+    color: #6c757d;
+    font-weight: bold;
+  }
+  

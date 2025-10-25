@@ -1,0 +1,61 @@
+.documentos-screen {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .search-bar {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .search-bar input {
+    width: 300px;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .documentos-client {
+    margin-bottom: 30px;
+  }
+  
+  .documentos-year {
+    margin-left: 20px;
+  }
+  
+  .documentos-category {
+    margin-left: 40px;
+  }
+  
+  .table-wrapper {
+    margin-top: 20px;
+    overflow-x: auto;
+  }
+  
+  .documents-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+  }
+  
+  .documents-table th,
+  .documents-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .documents-table th {
+    background-color: #f4f4f4;
+  }
+  
+  .documents-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .documents-table td {
+    word-wrap: break-word;
+  }
+  

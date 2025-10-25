@@ -1,0 +1,103 @@
+/* Scope solo para esta pantalla */
+.emos-worker .files-section {
+  --cols: 1.6fr 3.2fr 1.05fr 1.35fr 0.9fr 1.35fr 36px;
+  max-width: 1200px;
+  margin: 0 auto 48px;
+}
+
+/* Título + acciones */
+.emos-worker .header-with-search {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Botón + (crear carpeta) */
+.emos-worker .actions-row {
+  display: flex;
+  justify-content: flex-start; /* igual al Admin */
+  align-items: center;
+  margin: 6px 0 10px;
+}
+
+/* Encabezado tabla */
+.emos-worker .table-header {
+  display: grid;
+  grid-template-columns: var(--cols);
+  column-gap: 12px;
+  background: #e7edf3;
+  color: #334155;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Item archivo en grid (alineado con el header) */
+.emos-worker .file-item {
+  display: grid;
+  grid-template-columns: var(--cols);
+  column-gap: 12px;
+  align-items: center;
+  padding: 8px 14px;
+  border-bottom: 1px dashed #e5e7eb;
+  font-size: 0.95rem;
+}
+
+/* Menú de opciones a la derecha */
+.emos-worker .file-options {
+  position: relative;
+  justify-self: end;
+}
+.emos-worker .menu-icon {
+  cursor: pointer;
+}
+.emos-worker .dropdown-menu {
+  position: absolute;
+  top: 22px;
+  right: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 22px rgba(2, 6, 23, .12);
+  padding: 6px;
+  z-index: 60;
+}
+.emos-worker .dropdown-menu p {
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.emos-worker .dropdown-menu p:hover {
+  background: #f1f5f9;
+}
+
+/* Carpeta y subcarpeta */
+.emos-worker .folder-section { margin-top: 8px; }
+.emos-worker .folder-header {
+  display: flex; align-items: center; gap: 8px;
+  background: #c8d3de; color: #1f2937;
+  padding: 8px 12px; border-radius: 6px;
+}
+.emos-worker .folder-header h4 { margin: 0; font-size: 0.98rem; font-weight: 600; }
+.emos-worker .folder-options { margin-left: auto; position: relative; }
+
+.emos-worker .folder-content {
+  margin-left: 8px;
+  padding-left: 16px;
+  border-left: 2px solid #e5e7eb;
+}
+
+/* Vacio */
+.emos-worker .empty-folder-msg {
+  color: #64748b;
+  font-size: 0.95rem;
+  padding: 8px 0 8px 2px;
+}
+
+.file-item.highlighted {
+  background: #fff3bf; /* amarillo suave */
+  outline: 2px solid #ffd666;
+  border-radius: 6px;
+}

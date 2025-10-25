@@ -1,0 +1,45 @@
+.umv-container { display: flex; flex-direction: column; gap: 12px; }
+.umv-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.umv-header h2 { font-size: 20px; font-weight: 700; margin: 0; }
+
+.umv-search { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 8px 12px; width: 340px; }
+.umv-search input { border: none; outline: none; width: 100%; background: transparent; font-size: 14px; }
+
+.umv-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+.umv-filters button {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  color: #111827;              /* 👈 fuerza color de texto visible */
+  font-weight: 600;            /* opcional, para mejor lectura */
+}
+.umv-filters button.active {
+  background: #111827;
+  color: #fff;                 /* 👈 mantiene el contraste en activo */
+  border-color: #111827;
+}
+.umv-filters button:hover {
+  border-color: #cbd5e1;
+}
+.umv-medico_assign { background: #9333ea; }  /* violeta */
+
+.umv-feed { list-style: none; margin: 0; padding: 0; }
+.umv-item { display: flex; gap: 12px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 12px; background: #fff; align-items: flex-start; }
+
+.umv-icon { width: 36px; height: 36px; min-width: 36px; border-radius: 10px; display: grid; place-items: center; color: #fff; }
+.umv-publish { background: #2563eb; }
+.umv-assign { background: #16a34a; }
+.umv-version_add { background: #f59e0b; }
+.umv-medico_version_assign { background: #9333ea; }
+
+.umv-body { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.umv-line { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.umv-badge { background: #f3f4f6; color: #111827; border-radius: 6px; padding: 2px 6px; font-size: 12px; font-weight: 600; text-transform: uppercase; }
+.umv-text { font-size: 14px; color: #111827; }
+
+.umv-meta { display: flex; align-items: center; gap: 8px; color: #6b7280; font-size: 12px; }
+.umv-dot { opacity: .7; }
+.umv-empty { text-align: center; color: #6b7280; padding: 16px 0; }

@@ -1,13 +1,14 @@
-/* 🏷️ NUEVO: Estilo para los títulos de las columnas */
+/* 🏷️ NUEVO: Estilo para los títulos de las columnas con la nueva columna "Empresa" */
 .column--titles {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 50px;
+    grid-template-columns: 1fr 1fr 1fr 1fr 50px; /* Se agrega espacio para "Empresa" */
     font-weight: bold;
     color: #526d82;
     margin-bottom: 10px;
     padding: 10px 0;
     border-bottom: 2px solid #dde6ed;
     font-size: 19px;
+    text-align: left; /* Asegurar alineación correcta */
 }
 
 /* 🔄 Se mantiene lo demás tal como lo tenías */
@@ -30,11 +31,13 @@
 
 .list {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 50px;
+    grid-template-columns: 1fr 1fr 1fr 1fr 50px; /* Se asegura que todas las columnas estén bien alineadas */
     align-items: center;
     padding-right: 10px;
     padding: 12px 0;
     transition: 0.3s ease-in-out;
+    text-align: left;
+    cursor: pointer; /* 🛠️ NUEVO: Hace que el cursor cambie a una "mano" cuando pasa sobre una fila */
 }
 
 .teacher--detail {
@@ -49,6 +52,7 @@
 
 .list span {
     font-size: 19px;
+    text-align: left;
 }
 
 .list:hover {
@@ -62,6 +66,14 @@
     cursor: pointer;
 }
 
+/* 🏷️ Ajuste para tooltips */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* ✅ Corrección: Asegurar que el tooltip se ajuste a la pantalla */
 .tooltip-text {
     visibility: hidden;
     width: 160px;
@@ -69,14 +81,15 @@
     color: #fff;
     text-align: center;
     border-radius: 6px;
-    padding: 5px 0;
+    padding: 5px;
     position: absolute;
-    z-index: 1;
-    bottom: 125%; /* Ajusta la posición encima del ícono */
-    left: 50%;
-    transform: translateX(-50%);
+    z-index: 10;
+    bottom: 125%; /* Se coloca encima del icono */
+    left: auto; /* Se elimina la posición anterior */
+    right: 0; /* Se alinea al borde derecho del botón */
+    transform: translateX(0); /* Evita desplazamiento hacia fuera */
     opacity: 0;
-    transition: opacity 0.3s;
+    transition: opacity 0.3s ease-in-out;
     font-size: 12px;
 }
 
@@ -85,15 +98,39 @@
     content: '';
     position: absolute;
     top: 100%;
-    left: 50%;
-    margin-left: -5px;
+    right: 10px; /* Flecha alineada correctamente */
     border-width: 5px;
     border-style: solid;
     border-color: #526d82 transparent transparent transparent;
 }
 
 /* Mostrar tooltip al hacer hover */
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Mostrar tooltip al hacer hover */
 .teacher--todo:hover .tooltip-text {
     visibility: visible;
     opacity: 1;
+}
+.delete-icon {
+    color: #e74c3c; /* rojo suave tipo alerta */
+    font-size: 22px;
+    transition: 0.3s ease;
+  }
+  
+  .delete-icon:hover {
+    color: #c0392b; /* rojo más oscuro al hacer hover */
+    transform: scale(1.2);
+    cursor: pointer;
+  }
+  .list span {
+  display: inline-block;
+  max-width: 220px;   /* Ajusta según tus columnas */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: top;
 }

@@ -1,0 +1,186 @@
+/* === Fondo y estructura general del modal === */
+.modal-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* Panel más ancho */
+.modal-panel {
+  width: min(1280px, 98vw);
+  max-height: 92vh;
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+/* extra ancho (por si quieres variar por clase) */
+.modal-panel--wide {
+  width: min(1380px, 98.5vw);
+}
+
+.modal-header,
+.modal-footer {
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-footer {
+  border-top: 1px solid #eee;
+  border-bottom: none;
+  justify-content: flex-end;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.icon-btn {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #555;
+}
+
+/* === Cuerpo === */
+.modal-body {
+  padding: 12px 16px;
+  overflow: auto;
+}
+
+.bulk-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.bulk-controls .hint {
+  font-size: 12px;
+  color: #666;
+}
+
+/* === Tabla === */
+.bulk-table-wrapper {
+  overflow: auto;
+  border: 1px solid #eee;
+  border-radius: 10px;
+}
+
+.modal-panel .bulk-table thead th {
+  position: sticky;
+  top: 0;
+  color: #1f2937 !important;
+  background: #ffffff !important;
+  font-weight: 700;
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 2;
+}
+
+.bulk-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+  color: #111;
+}
+
+.bulk-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+.bulk-table td.idx {
+  width: 38px;
+  text-align: center;
+  color: #888;
+}
+
+/* Inputs y combos */
+.bulk-table input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  background-color: #fff;
+  color: #111;
+  font-size: 13.5px;
+}
+
+.bulk-table input:focus {
+  border-color: #1f7ae0;
+  box-shadow: 0 0 0 3px rgba(31, 122, 224, 0.15);
+}
+
+/* === Botones === */
+.btn-save {
+  background: #1f7ae0;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.btn-save:hover { background: #1560c2; }
+
+.btn-cancel {
+  background: #f2f3f5;
+  color: #333;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.btn-cancel:hover { background: #e0e0e0; }
+
+.btn-secondary {
+  margin-left: auto;
+  background: #f5f8ff;
+  color: #1f7ae0;
+  border: 1px solid #cfe0ff;
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+.btn-secondary:hover { background: #eaf1ff; }
+
+/* === Dark Mode === */
+@media (prefers-color-scheme: dark) {
+  .modal-panel { background: #1b1c1e; color: #e5e7eb; }
+  .modal-panel .bulk-table thead th {
+    color: #e5e7eb !important;
+    background: #111827 !important;
+    border-bottom-color: #374151;
+  }
+  .bulk-table td { border-bottom-color: #2d2f32; }
+  .bulk-table input {
+    background: #2d2f32; color: #f3f4f6; border-color: #444;
+  }
+  .btn-cancel { background: #2d2f32; color: #eee; }
+  .btn-save { background: #2563eb; }
+}

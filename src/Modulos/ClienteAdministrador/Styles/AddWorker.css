@@ -1,0 +1,101 @@
+.add-worker-container {
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+  }
+  
+  .add-worker-form {
+    display: flex;
+    gap: 40px;
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-left,
+  .form-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  input,
+  select {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
+  }
+  
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-start;
+    margin-top: 2rem;
+  }
+  
+  .btn-save {
+    background-color: #198754;
+    color: white;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .btn-cancel {
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .top-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .btn-secondary {
+    background-color: #0d6efd;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .dni-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .dni-row input {
+    flex: 1;
+  }
+  
+  .btn-consultar {
+    padding: 8px 12px;
+    background-color: #198754;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .add-worker-form {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    align-items: flex-start; /* 👈 Esto es lo que faltaba */
+  }
+  
+  

@@ -1,0 +1,15 @@
+/* src/Modulos/Cliente Usuario/Styles/LayoutClienteUsuario.css */
+.cliente-usuario-dashboard {
+    display: flex;
+    min-height: 100vh;
+    background-color: #e3e9ee;
+  }
+  
+  .cliente-usuario-content {
+    flex: 1;
+    padding: 30px;
+    background-color: white;
+    overflow-x: hidden; /* ✅ Bloquea scroll horizontal */
+  }
+  
+  

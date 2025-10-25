@@ -1,0 +1,49 @@
+.client-archives {
+    padding: 20px;
+}
+.client-archives h2 {
+    margin-bottom: 40px; /* 🔧 Incrementa el espacio debajo del título */
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.sections-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); /* 🔧 Cambiado a 6 columnas fijas */
+    gap: 25px;
+}
+
+.archives-card {
+    background-color: #dde6ed;
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    transition: transform 0.1s;
+    cursor: pointer;
+    position: relative; /* necesario para posicionar el botón */
+}
+
+.archives-card:hover {
+    transform: translateY(-8px);
+}
+
+.icon-container {
+    font-size: 3rem;
+    color: #526d82;
+    margin-bottom: 10px;
+}
+
+.archives-card h3 {
+    color: #526d82;
+    font-size: 1.1rem;
+}
+.delete-btn {
+    background: none;
+    border: none;
+    color: #a61d24;
+    font-size: 1.2rem;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    cursor: pointer;
+  }

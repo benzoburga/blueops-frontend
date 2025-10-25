@@ -1,0 +1,171 @@
+.create-client {
+    width: 100%;
+    padding: 30px;
+    background-color: #f5f7fa;
+    border-radius: 10px;
+}
+
+h2 {
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.ruc-search, .client-worker-table {
+    margin-bottom: 20px;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+
+.client-admin-table {
+    margin-bottom: 20px;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    }
+}
+.client-general-data {
+    margin-bottom: 20px;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;  /* Asegura que gap funcione */
+    flex-direction: column;  /* Mantiene los elementos alineados verticalmente */
+    gap: 10px; /* Aumenta ligeramente el espacio entre los elementos */
+}
+
+
+.ruc-input-container input {
+    height: 30px; /* Reduce la altura del input */
+    padding: 5px 10px; /* Ajusta el padding interno */
+    font-size: 14px; /* Opcional: reduce el tamaño del texto */
+    width: 20%;
+    margin-right: 40px;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 10px;
+    border: none;
+    background-color: #27374d;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px; /* Agrega más espacio entre la tabla y el botón */
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #27374d;
+    color: white;
+}
+
+/* === Tabla de Actividades (CIIU) === */
+.act-card {
+  margin-top: 16px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+.act-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.act-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.act-table thead th {
+  background: #f6f7fb;
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 12px;
+}
+.act-table tbody td {
+  padding: 10px 12px;
+  border-top: 1px solid #eceff3;
+}
+.act-col-ciiu { width: 160px; }
+.act-col-pri  { width: 110px; text-align: center; }
+.act-col-act  { width: 120px; }
+.act-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+}
+.act-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.15); }
+.act-empty { text-align: center; color: #6b7280; padding: 14px 0; }
+.act-center { text-align: center; }
+.act-btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  cursor: pointer;
+}
+.act-btn:hover { background: #f9fafb; }
+.act-btn-primary {
+  background: #2563eb; color: #fff; border-color: #2563eb;
+}
+.act-btn-primary:hover { filter: brightness(0.95); }
+.act-btn-danger {
+  background: #dc2626; color: #fff; border-color: #dc2626;
+}
+.act-btn-danger:hover { filter: brightness(0.95); }
+.act-card .act-table thead tr th {
+  color: #111827 !important;   /* texto gris-oscuro */
+  background: #f3f4f6 !important; /* gris claro */
+  font-weight: 700;
+  opacity: 1 !important;
+}
+
+.static-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.static-table thead th {
+  background: #f3f4f6;
+  text-align: left;
+  padding: 8px 10px;
+  font-weight: 600;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+.static-table tbody td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.static-table-wrapper { margin-top: 6px; }
+
+.client-general-data .static-table thead tr th {
+  color: #111827 !important;        /* texto gris oscuro */
+  background: #f3f4f6 !important;   /* gris claro */
+  font-weight: 700;
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+}
+

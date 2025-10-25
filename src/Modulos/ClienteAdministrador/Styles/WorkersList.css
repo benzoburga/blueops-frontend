@@ -1,0 +1,125 @@
+.workers-list-container {
+    padding: 30px;
+    background-color: #f9fbfd;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  
+  .workers-list-container h2 {
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
+  
+  .workers-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .workers-table th, .workers-table td {
+    padding: 12px 15px;
+    text-align: left;
+  }
+  
+  .workers-table th {
+    background-color: #27374d;
+    color: white;
+  }
+  
+  .workers-table tr:nth-child(even) {
+    background-color: #f4f6f8;
+  }
+  .workers-list-container {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+  }
+  
+  .filters {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .filters input, .filters select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 48%;
+  }
+  
+  .workers-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .workers-table th {
+    background-color: #27374d;
+    color: white;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .workers-table td {
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .workers-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  .btn-eliminar-global {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-left: 10px;
+  transition: background-color 0.2s;
+}
+
+.btn-eliminar-global:hover {
+  background-color: #b52a37;
+}
+.btn-eliminar-global {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-left: 10px;
+  transition: background-color 0.2s;
+}
+
+.btn-eliminar-global:hover {
+  background-color: #b52a37;
+}
+
+.btn-cancelar {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-left: 10px;
+}
+
+.btn-cancelar:hover {
+  background-color: #5a6268;
+}
+
+.workers-table input[type="checkbox"] {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+  
