@@ -3,7 +3,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import MedicalModule from "@modulos/Medico/Pages/MedicalModule";
 import ClientesMedico from "@modulos/Medico/Pages/ClientesMedico";
-import TrabajadoresDelCliente from "@modulos/Medico/Pages/TrabajadoresDelCliente";
+import TrabajadoresDelCliente from "@modulos/Medico/Pages/TrabajadoresdelCliente.jsx";
 import TrabajadorDetalleMedico from "@modulos/Medico/Pages/TrabajadoresDetalleMedico";
 import TrabajadorEMOs from "@modulos/Medico/Pages/TrabajadorEMOs"; 
 import BuscadorEmos from "@modulos/Medico/Pages/BuscadorEmos";
