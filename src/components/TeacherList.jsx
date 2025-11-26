@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import '../styles/teacherList.css';
+import '../styles/teacherlist.css';
 import { BiShow, BiMinusCircle } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
