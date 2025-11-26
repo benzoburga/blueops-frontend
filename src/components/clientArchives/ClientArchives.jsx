@@ -1,4 +1,3 @@
-// src/pages/ClientArchives.jsx
 import React, { useState, useEffect } from 'react';
 import '../../styles/clientArchives.css';
 import ClientArchivesCard from './ClientArchivesCard';
