@@ -1,6 +1,6 @@
 // src/Modulos/Cliente Administrador/Components/WorkerListModal.jsx
 import { useState, useMemo, useEffect } from "react";
-import "../Styles/WorkerListModal.css";
+import "../Styles/workerListModal.css";
 import axios from "axios";
 
 const parseJSON = (s) => { try { return JSON.parse(s || "{}"); } catch { return {}; } };
