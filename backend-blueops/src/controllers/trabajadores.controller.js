@@ -1,3 +1,4 @@
+//trabajadores.controller.js
 const { pool } = require('../config/db');
 
 /* ======================== CONSULTAS BASE ======================== */
@@ -336,8 +337,14 @@ const getTrabajadoresPorCliente = async (req, res) => {
 };
 
 const getMisTrabajadores = async (req, res) => {
-  const clienteId = req.user?.cliente_id;
-  if (!clienteId) return res.status(400).json({ msg: 'cliente_id no presente en token' });
+  // Acepta del token o de la query (útil en producción local sin auth)
+  const clienteId = req.user?.cliente_id || req.query?.cliente_id;
+
+  if (!clienteId) {
+    return res.status(400).json({ msg: 'cliente_id no presente' });
+  }
+
+  // Reusa el mismo handler que lista por cliente
   req.params.cliente_id = clienteId;
   return getTrabajadoresPorCliente(req, res);
 };
@@ -431,9 +438,15 @@ const getPerfilClienteUsuario = async (req, res) => {
   try {
     console.log('[perfil] controlador HIT, req.user =', req.user);
 
-    const userId = req.user?.id;
-    if (!userId) return res.status(401).json({ msg: 'Token inválido' });
+    const userId =
+      req.user?.id ??
+      req.user?.uid ??
+      req.user?.user_id ??
+      req.user?.usuario_id ??
+      null;
 
+    if (!userId) return res.status(401).json({ msg: 'Token inválido' });
+    
     const [uRows] = await pool.query(
       'SELECT trabajador_id FROM usuarios WHERE id = ? LIMIT 1',
       [userId]
@@ -480,6 +493,70 @@ const getPerfilClienteUsuario = async (req, res) => {
   }
 };
 
+const updateTrabajador = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!id) return res.status(400).json({ msg: "ID inválido" });
+
+    const {
+      nombre,
+      apellido,
+      direccion,
+      sexo,
+      fechaNacimiento,
+      fechaInicio,
+      puesto,            // nombre del puesto (el back resuelve el id)
+      numero,
+      correo,
+    } = req.body || {};
+
+    // 1) obtener cliente_id del trabajador
+    const [[t]] = await pool.query(
+      "SELECT cliente_id FROM trabajadores WHERE id = ? LIMIT 1",
+      [id]
+    );
+    if (!t) return res.status(404).json({ msg: "Trabajador no encontrado" });
+
+    // 2) resolver/crear puesto_id a partir del nombre
+    const puesto_id = await ensurePuestoIdByNombre(
+      puesto || "Asistente Técnico",
+      t.cliente_id
+    );
+
+    // 3) actualizar
+    await pool.query(
+      `UPDATE trabajadores
+       SET nombres = ?, apellidos = ?, direccion = ?, sexo = ?,
+           fecha_nacimiento = ?, fecha_inicio = ?, puesto_id = ?,
+           numero = ?, correo = ?
+       WHERE id = ?`,
+      [
+        nombre?.trim() ?? null,
+        apellido?.trim() ?? null,
+        direccion ?? null,
+        sexo ?? null,
+        fechaNacimiento ?? null,
+        fechaInicio ?? null,
+        puesto_id ?? null,
+        numero ?? null,
+        correo ?? null,
+        id,
+      ]
+    );
+
+    // 4) devolver fila actualizada (mismo shape que usas en front)
+    const [rows] = await pool.query(
+      baseQuery.replace("WHERE t.cliente_id = ?", "WHERE t.id = ?"),
+      [id, "", "", "", "", ""]
+    );
+    return res.json(rows[0] || { id, msg: "Actualizado" });
+  } catch (err) {
+    console.error("Error actualizando trabajador:", err);
+    return res.status(500).json({ msg: "Error actualizando trabajador" });
+  }
+};
+
+
 module.exports = {
   getTrabajadoresPorCliente,
   getMisTrabajadores,
@@ -490,4 +567,5 @@ module.exports = {
   getPerfilClienteUsuario,
   getTrabajadoresTodosMedico,
   createTrabajadoresBulk,
+  updateTrabajador,
 };

@@ -34,3 +34,6 @@ html, body {
 .sidebar-collapsed .dashboard--content {
   max-width: calc(100vw - 70px);
 }
+@media (max-width:1024px){
+  .dashboard, .dashboard--content { all: unset; } /* desactiva el grid viejo */
+}

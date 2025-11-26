@@ -136,5 +136,30 @@
   display: none;
 }
 
+.teacher-item-compact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border: 1px solid #e6e9f0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.teacher-item-compact .teacher-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 80%;
+}
+
+.view-btn {
+  border: 1px solid #d3d7de;
+  background: #f5f7fa;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
 
 

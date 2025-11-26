@@ -40,14 +40,14 @@ const toAbsoluteUrl = (u = "") => {
   if (!u) return "#";
   if (/^https?:\/\//i.test(u)) return u;
 
-  // baseURL del axios (p.ej. http://localhost:3000/api)
+  // baseURL del axios (p.ej. /api)
   const base = (api?.defaults?.baseURL || "").replace(/\/+$/, "");
 
   // si el path es /uploads/... necesitamos el ORIGIN del backend (sin /api)
   if (u.startsWith("/uploads")) {
     try {
       const url = new URL(base, window.location.origin);
-      return `${url.origin}${u}`; // http://localhost:3000 + /uploads/...
+      return `${url.origin}${u}`; // origen actual (4000) + /uploads/...
     } catch {
       // fallback: quitar /api manualmente
       return base.replace(/\/api\/?$/, "") + u;

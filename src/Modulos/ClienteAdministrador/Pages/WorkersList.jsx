@@ -1,7 +1,9 @@
+//WorkersList.jsx
 import { useEffect, useMemo, useState } from "react";
 import api from "@/services/api";
 import WorkerListModal from "../Components/WorkerListModal";
 import "../Styles/WorkersList.css";
+import { toast } from "@/lib/toast";
 
 // helpers ...
 const parseJSON = (s) => { try { return JSON.parse(s || "{}"); } catch { return {}; } };
@@ -59,15 +61,9 @@ export default function WorkersList({ workers, setWorkers }) {
         const { data } = await api.get(`/clientes/${u.cliente_id}/trabajadores`);
         const arr = Array.isArray(data) ? data : (Array.isArray(data?.rows) ? data.rows : []);
         setOwnWorkers(mapRows(arr));
-      } catch {
-        try {
-          const u = getAuthUser();
-          const { data } = await api.get(`/trabajadores`, { params: { cliente_id: u?.cliente_id } });
-          const arr = Array.isArray(data) ? data : (Array.isArray(data?.rows) ? data.rows : []);
-          setOwnWorkers(mapRows(arr));
-        } catch {
-          setOwnWorkers([]);
-        }
+      } catch (e) {
+     console.error(e);
+     setOwnWorkers([]);
       } finally {
         setLoading(false);
       }
@@ -155,10 +151,44 @@ export default function WorkersList({ workers, setWorkers }) {
   };
 
   const handleCloseModal = () => setIsModalOpen(false);
-  const handleSaveChanges = (updated) => {
-    setData(prev => prev.map(w => (w.identificacion === updated.identificacion ? updated : w)));
+  const handleSaveChanges = async (updated) => {
+  try {
+    const id = updated.trabajador_id || selectedWorker?.trabajador_id;
+    if (!id) {
+      toast?.("No se pudo determinar el ID del trabajador", { type: "error" });
+      return;
+    }
+
+    const payload = {
+      nombre:          updated.nombre ?? "",
+      apellido:        updated.apellido ?? "",
+      direccion:       updated.direccion ?? "",
+      sexo:            updated.sexo ?? "",
+      fechaNacimiento: updated.fechaNacimiento || null,
+      fechaInicio:     updated.fechaInicio || null,
+      puesto:          updated.puesto ?? "", // ← nombre; el back resuelve puesto_id
+      numero:          updated.numero ?? "",
+      correo:          updated.correo ?? "",
+    };
+
+    const { data } = await api.put(`/trabajadores/${id}`, payload);
+    const mapped = mapRows([data])[0];
+
+    setData(prev =>
+      prev.map(w =>
+        (w.trabajador_id === id || w.identificacion === mapped.identificacion)
+          ? mapped
+          : w
+      )
+    );
+
+    toast?.("Trabajador actualizado ✅", { type: "success" });
     setIsModalOpen(false);
-  };
+  } catch (e) {
+    console.error("Error actualizando trabajador:", e?.response?.data || e);
+    toast?.("No se pudo actualizar el trabajador", { type: "error" });
+  }
+};
 
   const handleEliminarSeleccionados = () => {
     if (!modoEliminar) return setModoEliminar(true);

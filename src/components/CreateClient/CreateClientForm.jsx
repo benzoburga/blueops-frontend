@@ -8,10 +8,9 @@ import ClientAdminTable from './ClientAdminTable';
 import '../../styles/CreateClient/createClient.css';
 import { toast } from '../../lib/toast';
 import ClientActivitiesTable from './ClientActivitiesTable';
+import api from "@/services/api";
 
 // Base con /api incluido
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-
 const CreateClientForm = () => {
   const [cliente, setCliente] = useState({
     ruc: '',
@@ -37,7 +36,7 @@ const CreateClientForm = () => {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await axios.get(`${API}/catalogos`);
+        const { data } = await api.get("/catalogos");
         const norm = {
           tipos: data?.tipos ?? [],
           estados: data?.estados ?? [],
@@ -82,7 +81,7 @@ const CreateClientForm = () => {
       }
 
       const payload = { cliente, representantes, indicadores, actividades };
-      await axios.post(`${API}/clientes`, payload);          // ✅ sin doble /api
+      await api.post("/clientes", payload);        // ✅ sin doble /api
 
       toast('Cliente creado correctamente ✅', { type: 'success', duration: 3500 });
     } catch (e) {

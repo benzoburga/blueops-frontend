@@ -1,3 +1,4 @@
+//App.jsx
 import { Routes, Route } from "react-router-dom";
 import LoginForm from "@components/LoginForm/LoginForm";
 import AdminDashboard from "@modulos/AdministradorBlueOps/AdminDashboard";

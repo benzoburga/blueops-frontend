@@ -3,7 +3,6 @@ import { useState, useMemo, useEffect } from "react";
 import "../Styles/WorkerListModal.css";
 import axios from "axios";
 
-const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 const parseJSON = (s) => { try { return JSON.parse(s || "{}"); } catch { return {}; } };
 const getAuthUser = () => {
   const raw =
@@ -42,7 +41,7 @@ const WorkerListModal = ({ worker, onClose, onSave }) => {
     if (auth.token) headers.Authorization = `Bearer ${auth.token}`;
 
     axios
-      .get(`${API}/api/clientes/${auth.cliente_id}/puestos_trabajo?incluirGlobales=1`, { headers })
+      .get(`/api/clientes/${auth.cliente_id}/puestos_trabajo?incluirGlobales=1`, { headers })
       .then(({ data }) => {
         const arr = Array.isArray(data) ? data : [];
         setPuestos(arr);

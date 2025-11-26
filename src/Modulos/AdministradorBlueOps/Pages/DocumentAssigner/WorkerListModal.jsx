@@ -3,8 +3,6 @@ import  { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../Styles/WorkerListModal.css';
 
-const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-
 const WorkerListModal = ({ clientId, selectedWorkers, setSelectedWorkers, closeModal }) => {
   const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -19,7 +17,7 @@ const WorkerListModal = ({ clientId, selectedWorkers, setSelectedWorkers, closeM
       try {
         setLoading(true);
         setError('');
-        const { data } = await axios.get(`${API}/api/trabajadores/cliente/${clientId}`, {
+        const { data } = await axios.get(`/api/trabajadores/cliente/${clientId}`, {
           params: { q: nameFilter, riesgo: riskFilter }
         });
         // Esperamos que cada item tenga: { id (trabajador_id), nombreCompleto, puesto, riesgo, usuario_id }

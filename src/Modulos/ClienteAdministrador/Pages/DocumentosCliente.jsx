@@ -5,11 +5,11 @@ import '../../../styles/filesSection.css';
 import { FaSearch, FaFilePdf, FaEllipsisV, FaFolderOpen, FaFolder } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 
-const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-
 /* =========================
    Helpers de storage / token
    ========================= */
+const ORIGIN = window.location.origin; // http://localhost:4000
+
 const parseJSON = (s) => { try { return JSON.parse(s || '{}'); } catch { return {}; } };
 const readFromBothStorages = (key) => localStorage.getItem(key) ?? sessionStorage.getItem(key) ?? null;
 
@@ -159,14 +159,14 @@ const DocumentosCliente = () => {
       try {
         if (userMeta.email) {
           try {
-            const { data } = await axios.get(`${API}/api/usuarios/by-email`, { params: { email: userMeta.email } });
+            const { data } = await axios.get(`/api/usuarios/by-email`, { params: { email: userMeta.email } });
             const idOk = data?.id ?? data?.usuario_id ?? null;
             if (idOk) { setUsuarioId(Number(idOk)); return; }
           } catch {}
         }
         if (userMeta.dni) {
           try {
-            const { data } = await axios.get(`${API}/api/usuarios/by-dni`, { params: { dni: userMeta.dni } });
+            const { data } = await axios.get(`/api/usuarios/by-dni`, { params: { dni: userMeta.dni } });
             const idOk = data?.id ?? data?.usuario_id ?? null;
             if (idOk) { setUsuarioId(Number(idOk)); return; }
           } catch {}
@@ -174,7 +174,7 @@ const DocumentosCliente = () => {
         const fallbackId = userMeta.raw?.id ?? userMeta.raw?.usuario_id ?? userMeta.raw?.user_id ?? null;
         if (fallbackId) {
           try {
-            const { data } = await axios.get(`${API}/api/usuarios/${fallbackId}`);
+            const { data } = await axios.get(`/api/usuarios/${fallbackId}`);
             const idOk = data?.id ?? data?.usuario_id ?? null;
             if (idOk) { setUsuarioId(Number(idOk)); return; }
           } catch {}
@@ -194,7 +194,7 @@ const DocumentosCliente = () => {
     const resolveCliente = async () => {
       try {
         if (clienteId) {
-          const { data } = await axios.get(`${API}/api/clientes`);
+          const { data } = await axios.get(`/api/clientes`);
           const lista = Array.isArray(data)
             ? data
             : (Array.isArray(data?.clientes) ? data.clientes
@@ -208,7 +208,7 @@ const DocumentosCliente = () => {
 
         if (usuarioId) {
           try {
-            const { data: userApi } = await axios.get(`${API}/api/usuarios/${usuarioId}`);
+            const { data: userApi } = await axios.get(`/api/usuarios/${usuarioId}`);
             const cliIdFromUser = userApi?.cliente_id || userApi?.clienteId || userApi?.cliente?.id;
             if (cliIdFromUser) {
               setClienteId(Number(cliIdFromUser));
@@ -217,7 +217,7 @@ const DocumentosCliente = () => {
           } catch {}
         }
 
-        const { data } = await axios.get(`${API}/api/clientes`);
+        const { data } = await axios.get(`/api/clientes`);
         const lista = Array.isArray(data)
           ? data
           : (Array.isArray(data?.clientes) ? data.clientes
@@ -255,7 +255,7 @@ const DocumentosCliente = () => {
   useEffect(() => {
     const loadApartados = async () => {
       const tryLoad = async (idCandidato) => {
-        const { data } = await axios.get(`${API}/api/apartados/cliente/${idCandidato}`);
+        const { data } = await axios.get(`/api/apartados/cliente/${idCandidato}`);
         const listRaw = Array.isArray(data)
           ? data
           : (Array.isArray(data?.rows) ? data.rows
@@ -306,7 +306,7 @@ const DocumentosCliente = () => {
       }
       try {
         // 1) filas planas
-        const { data } = await axios.get(`${API}/api/asignaciones/cliente-usuario`, {
+        const { data } = await axios.get(`/api/asignaciones/cliente-usuario`, {
           params: { apartado_cliente_id: selectedCategoryId, usuario_id: usuarioId }
         });
         const rows = Array.isArray(data) ? data : [];
@@ -319,7 +319,7 @@ const DocumentosCliente = () => {
           approvalDate: f.fecha_aprobacion ? String(f.fecha_aprobacion).slice(0,10) : 'No incluye',
           uploadDate: f.fecha_subida ? String(f.fecha_subida).slice(0,10) : 'No incluye',
           version: f.version ?? 1,
-          url: `${API}${f.url_archivo || ''}`,
+          url: `${ORIGIN}${f.url_archivo || ''}`,
         });
 
         // 3) construir árbol por "full_path"

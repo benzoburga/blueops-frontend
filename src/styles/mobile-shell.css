@@ -1,0 +1,149 @@
+.app-shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar.static {
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar {
+  background: #f3f7fb;
+  color: #0b1a2b;
+  overflow-y: auto;
+}
+
+.app-content {
+  background: #fff;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.app-title {
+  font-size: 1rem;
+  opacity: 0.85;
+}
+
+.app-main {
+  padding: 12px;
+}
+
+/* ===========================
+   📱 MODO MÓVIL (<= 1024px)
+   =========================== */
+@media (max-width: 1024px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 260px;
+    height: 100vh;
+    transition: left 0.25s ease;
+    z-index: 40;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(1px);
+    z-index: 30;
+  }
+
+  .menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: #f1f3f6; /* gris suave */
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: #222; /* color del ícono */
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .menu-btn:hover {
+    background: #e2e6eb;
+    color: #000;
+  }
+}
+
+/* ===========================
+   🖥️  MODO DESKTOP (> 1024px)
+   =========================== */
+
+/* Ocultar el título "BlueOps" del header SOLO en escritorio */
+@media (min-width: 1025px) {
+  .app-header .app-title {
+    display: none;
+  }
+
+  /* Opcional: compactar un poco el header */
+  .app-header {
+    gap: 0.5rem;
+    padding-left: 0.75rem;
+  }
+}
+
+/* tablas grandes (por si acaso) */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive table {
+  min-width: 720px;
+}
+
+/* Desktop: cuando el shell esté colapsado, reduce la columna y el ancho del aside */
+.app-shell.collapsed {
+  grid-template-columns: 72px 1fr;
+}
+
+.app-shell.collapsed .sidebar.static {
+  width: 72px;
+}
+
+/* =======================================
+   📱 Mejor centrado del contenido en móvil
+   ======================================= */
+@media (max-width: 600px) {
+  .app-main,
+  .dashboard--content,
+  .app-content {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  /* También ajusta los títulos y buscador */
+  .app-header {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  /* Para tablas o listas, que ocupen bien el ancho */
+  .teacher--list,
+  .table-responsive {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+  }
+}

@@ -1,5 +1,6 @@
+// src/Modulos/Admin/PublicacionesList.jsx
 import { useEffect, useMemo, useState } from "react";
-import api from "@/services/api";
+import api, { setAuthToken } from "@/services/api";
 import { FiSearch, FiFilePlus, FiUserCheck, FiRefreshCw } from "react-icons/fi";
 import { FaStethoscope } from "react-icons/fa";
 import "@/styles/Publicaciones/PublicacionesList.css";
@@ -14,26 +15,10 @@ const MOVEMENT_TYPES = {
 
 /* ========= ICONOS / LABELS / BADGE ========= */
 const typeMeta = {
-  [MOVEMENT_TYPES.PUBLISH]: {
-    label: "Publicación",
-    icon: FiFilePlus,
-    badge: "PUBLICACIÓN",
-  },
-  [MOVEMENT_TYPES.ASSIGN]: {
-    label: "Asignación",
-    icon: FiUserCheck,
-    badge: "ASIGNACIÓN",
-  },
-  [MOVEMENT_TYPES.VERSION_ADD]: {
-    label: "Versión",
-    icon: FiRefreshCw,
-    badge: "NUEVA VERSIÓN",
-  },
-  [MOVEMENT_TYPES.MEDICO_ASSIGN]: {
-    label: "Médico",
-    icon: FaStethoscope,
-    badge: "MÉDICO",
-  },
+  [MOVEMENT_TYPES.PUBLISH]: { label: "Publicación", icon: FiFilePlus, badge: "PUBLICACIÓN" },
+  [MOVEMENT_TYPES.ASSIGN]: { label: "Asignación", icon: FiUserCheck, badge: "ASIGNACIÓN" },
+  [MOVEMENT_TYPES.VERSION_ADD]: { label: "Versión", icon: FiRefreshCw, badge: "NUEVA VERSIÓN" },
+  [MOVEMENT_TYPES.MEDICO_ASSIGN]: { label: "Médico", icon: FaStethoscope, badge: "MÉDICO" },
 };
 
 /* ========= HELPERS ========= */
@@ -45,7 +30,6 @@ function hhmm(iso) {
   h = h % 12 || 12;
   return `${String(h).padStart(2, "0")}:${m} ${ampm}`;
 }
-
 const safe = (v, fallback = "—") => (v && String(v).trim()) || fallback;
 
 /** Normaliza posibles variantes que vengan del backend o datos antiguos */
@@ -53,29 +37,45 @@ function normalizeType(t = "") {
   const s = String(t).toUpperCase();
   if (["PUBLISH", "PUBLICACION", "PUBLICACIÓN"].includes(s)) return MOVEMENT_TYPES.PUBLISH;
   if (["ASSIGN", "ASIGNACION", "ASIGNACIÓN"].includes(s)) return MOVEMENT_TYPES.ASSIGN;
-  if (["VERSION_ADD", "NUEVA_VERSION", "NUEVA VERSIÓN", "VERSION"].includes(s))
-    return MOVEMENT_TYPES.VERSION_ADD;
+  if (["VERSION_ADD", "NUEVA_VERSION", "NUEVA VERSIÓN", "VERSION"].includes(s)) return MOVEMENT_TYPES.VERSION_ADD;
   if (["MEDICO_ASSIGN", "MEDICO", "MÉDICO"].includes(s)) return MOVEMENT_TYPES.MEDICO_ASSIGN;
-  return s; // deja pasar si ya coincide
+  return s;
 }
 
-/** Texto mostrado por cada movimiento */
-function buildLine(e) {
-  switch (e.type) {
+/* ========= BUILDER DE LÍNEA ========= */
+function buildLine(m = {}) {
+  const type = normalizeType(m.type);
+  const archivo =
+    m.fileName || m.archivo_nombre || m.archivo || m.nombre_archivo || m.nombre || "Archivo";
+  const cliente =
+    m.cliente_nombre || m.cliente || m.clientName || m.nombre_cliente || "cliente";
+  const apartado =
+    m.apartado_nombre || m.apartado || m.sectionName || m.nombre_apartado || "";
+  const trabajador =
+    m.trabajador_nombre || m.trabajador || m.workerName || m.nombre_trabajador || "";
+  const version =
+    m.version_nueva ?? m.nueva_version ?? m.version ?? m.num_version ?? "";
+
+  switch (type) {
     case MOVEMENT_TYPES.PUBLISH:
-      return `"${safe(e.fileName)}" ha sido publicado en "${safe(e.folderName)}" del cliente "${safe(
-        e.clientName
-      )}" a las "${hhmm(e.timestamp)}"`;
+      return apartado
+        ? `Se publicó "${archivo}" en "${apartado}" de "${cliente}".`
+        : `Se publicó "${archivo}" para "${cliente}".`;
+
     case MOVEMENT_TYPES.ASSIGN:
-      return `"${safe(e.fileName)}" ha sido asignado a "${safe(e.assigneeName)}".`;
+      if (trabajador) {
+        return `Se asignó "${archivo}" a ${trabajador} (${cliente}).`;
+      }
+      return `Se asignó "${archivo}" en "${cliente}".`;
+
     case MOVEMENT_TYPES.VERSION_ADD:
-      return `Se añadió una nueva versión "${safe(e.version)}" al archivo "${safe(
-        e.fileName
-      )}" en "${safe(e.folderName)}" de "${safe(e.clientName)}".`;
+      return `Se añadió una nueva versión "${version || "—"}" al archivo "${archivo}" en "${apartado || "—"}" de "${cliente}".`;
+
     case MOVEMENT_TYPES.MEDICO_ASSIGN:
-      return `Médico subió "${safe(e.fileName)}" para "${safe(e.clientName)}".`;
+      return `Médico subió "${archivo}" para "${cliente}".`;
+
     default:
-      return `Movimiento "${safe(e.type)}" sobre "${safe(e.fileName)}"`;
+      return `Movimiento sobre "${archivo}" para "${cliente}".`;
   }
 }
 
@@ -86,29 +86,57 @@ export default function PublicacionesList() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Cargar desde backend
+  // Cargar desde backend con retry si 401
   useEffect(() => {
-    api
-      .get("/movimientos")
-      .then((r) => {
-        const arr = Array.isArray(r.data) ? r.data : [];
-        // normalizar type para que siempre matchee con el meta
+    let cancel = false;
+
+    const getTokenFromStorage = () => {
+      try {
+        const saved =
+          JSON.parse(localStorage.getItem("authUser") || "null") ||
+          JSON.parse(sessionStorage.getItem("authUser") || "null") ||
+          {};
+        return saved?.token || localStorage.getItem("token") || "";
+      } catch {
+        return "";
+      }
+    };
+
+    const load = async (retry = true) => {
+      setLoading(true);
+      try {
+        const { data } = await api.get("/movimientos");
+        if (cancel) return;
+        const arr = Array.isArray(data) ? data : [];
         setRows(arr.map((m) => ({ ...m, type: normalizeType(m.type) })));
-      })
-      .catch((err) => {
+      } catch (err) {
+        const status = err?.response?.status;
+        if (retry && status === 401) {
+          const t = getTokenFromStorage();
+          if (t) {
+            setAuthToken(t);
+            return load(false);
+          }
+        }
         console.error("Error cargando movimientos:", err);
-        setRows([]);
-      })
-      .finally(() => setLoading(false));
+        if (!cancel) setRows([]);
+      } finally {
+        if (!cancel) setLoading(false);
+      }
+    };
+
+    load();
+
+    return () => {
+      cancel = true;
+    };
   }, []);
 
   // Filtrado + búsqueda + orden
   const data = useMemo(() => {
     return rows
       .filter((e) => (type === "all" ? true : e.type === type))
-      .filter((e) =>
-        JSON.stringify(e).toLowerCase().includes(search.trim().toLowerCase())
-      )
+      .filter((e) => JSON.stringify(e).toLowerCase().includes(search.trim().toLowerCase()))
       .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   }, [rows, search, type]);
 
@@ -128,18 +156,11 @@ export default function PublicacionesList() {
       </div>
 
       <div className="umv-filters">
-        <button
-          className={type === "all" ? "active" : ""}
-          onClick={() => setType("all")}
-        >
+        <button className={type === "all" ? "active" : ""} onClick={() => setType("all")}>
           Todos
         </button>
         {Object.entries(typeMeta).map(([k, v]) => (
-          <button
-            key={k}
-            className={type === k ? "active" : ""}
-            onClick={() => setType(k)}
-          >
+          <button key={k} className={type === k ? "active" : ""} onClick={() => setType(k)}>
             {v.label}
           </button>
         ))}
@@ -167,8 +188,7 @@ export default function PublicacionesList() {
                       <span className="umv-actor">{safe(e.actor, "—")}</span>
                       <span className="umv-dot">•</span>
                       <span className="umv-time">
-                        {new Date(e.timestamp).toLocaleDateString("es-PE")}{" "}
-                        {hhmm(e.timestamp)}
+                        {new Date(e.timestamp).toLocaleDateString("es-PE")} {hhmm(e.timestamp)}
                       </span>
                     </div>
                   </div>
@@ -178,9 +198,7 @@ export default function PublicacionesList() {
           </ul>
 
           {data.length === 0 && (
-            <div className="umv-empty">
-              No hay movimientos que coincidan con tu búsqueda.
-            </div>
+            <div className="umv-empty">No hay movimientos que coincidan con tu búsqueda.</div>
           )}
         </>
       )}

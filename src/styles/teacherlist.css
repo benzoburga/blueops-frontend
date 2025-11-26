@@ -134,3 +134,83 @@
   text-overflow: ellipsis;
   vertical-align: top;
 }
+/* ===== Vista compacta móvil ===== */
+.client-compact-list {
+  display: grid;
+  gap: 10px;
+}
+
+.client-compact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #e6e9f0;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.client-compact__name {
+  font-weight: 600;
+   color: #1a1a1a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 75%;
+}
+
+.client-compact__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.view-btn {
+  border: 1px solid #d3d7de;
+  background: #f5f7fa;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.btn-ghost.danger {
+  color: #c0392b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* (Opcional) asegúrate de que las filas de la tabla no se deformen */
+@media (max-width: 900px) {
+  .teacher--list .column--titles { font-size: 14px; }
+  .teacher--list .list span { font-size: 14px; }
+}
+.client-compact-list { display:grid; gap:10px; }
+.client-compact {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:12px; border:1px solid #e6e9f0; border-radius:10px; background:#fff; cursor:pointer;
+}
+.client-compact__name {
+  font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:75%;
+}
+.client-compact__actions { display:flex; align-items:center; gap:6px; }
+.view-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d3d7de;
+  background: #f5f7fa;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  color: #333;              /* 👈 ícono oscuro */
+  transition: background 0.2s, color 0.2s;
+}
+
+.view-btn:hover {
+  background: #e9edf2;
+  color: #000;
+}
+.btn-ghost.danger { color:#c0392b; background:transparent; border:none; cursor:pointer; }

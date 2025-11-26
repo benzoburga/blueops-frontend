@@ -1,14 +1,10 @@
 //index.jsx
 import { useEffect, useMemo, useState } from 'react';
-import axios from 'axios';
+import api from '@/services/api';
 import FileTreeWithCheckbox from './FileTreeWithCheckbox';
 import WorkerListModal from './WorkerListModal';
 import '../../../../styles/filesSection.css';
 import Toast from '@/components/Toast';
-
-
-// Si usas Vite, define VITE_API_BASE_URL, o usa ruta relativa "/api"
-const API = 'http://localhost:3000';
 
 // 🔹 Convierte el slug de la ruta al nombre real del apartado (con tildes)
 const decodeSectionName = (slug) => {
@@ -36,23 +32,21 @@ const decodeSectionName = (slug) => {
 };
 
 const DocumentAssigner = () => {
-  // === árbol real para el checkbox ===
-  // [{ year, carpeta_id, orden, files:[], subfolders:[...] }]
   const [filesData, setFilesData] = useState([]);
 
-  // === selects ===
-  const [clients, setClients] = useState([]);                 // [{id, nombre}]
-  const [selectedClient, setSelectedClient] = useState('');   // id del cliente
+  // selects
+  const [clients, setClients] = useState([]);
+  const [selectedClient, setSelectedClient] = useState('');
 
-  const [categories, setCategories] = useState([]);           // [{id, nombre}]
-  const [selectedCategory, setSelectedCategory] = useState(''); // id de apartados_cliente
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
 
-  // === asignación ===
+  // asignación
   const [showModal, setShowModal] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [selectedWorkers, setSelectedWorkers] = useState([]);
 
-  // === loading / error ===
+  // loading / error
   const [loadingClients, setLoadingClients] = useState(false);
   const [loadingCats, setLoadingCats] = useState(false);
   const [error, setError] = useState('');
@@ -66,7 +60,7 @@ const DocumentAssigner = () => {
       try {
         setLoadingClients(true);
         setError('');
-        const { data } = await axios.get(`${API}/api/clientes`);
+        const { data } = await api.get('/clientes');
         const list = Array.isArray(data)
           ? data
           : (Array.isArray(data?.clientes) ? data.clientes
@@ -96,7 +90,7 @@ const DocumentAssigner = () => {
       try {
         setLoadingCats(true);
         setError('');
-        const { data } = await axios.get(`${API}/api/apartados/cliente/${selectedClient}`);
+        const { data } = await api.get(`/apartados/cliente/${selectedClient}`);
         const list = (Array.isArray(data) ? data : [])
           .map(x => ({ id: x.id, nombre: x.nombre ?? x.nombre_apartado ?? '—' }));
         setCategories(list);
@@ -119,29 +113,26 @@ const DocumentAssigner = () => {
     return obj?.nombre || '';
   }, [categories, selectedCategory]);
 
-  // 4) Cargar árbol real (recursivo) y mapear al mismo shape de FilesSection
+  // 4) Cargar árbol real (recursivo)
   useEffect(() => {
-  const loadTree = async () => {
-    const cli = (clients || []).find(c => String(c.id) === String(selectedClient));
-    const clienteNombre = cli?.nombre ?? cli?.nombre_comercial ?? '';
-    const apartadoNombre = selectedCategoryName;
+    const loadTree = async () => {
+      const cli = (clients || []).find(c => String(c.id) === String(selectedClient));
+      const clienteNombre = cli?.nombre ?? cli?.nombre_comercial ?? '';
+      const apartadoNombre = selectedCategoryName;
 
-    if (!clienteNombre || !apartadoNombre) {
-      setFilesData([]);
-      return;
-    }
+      if (!clienteNombre || !apartadoNombre) {
+        setFilesData([]);
+        return;
+      }
 
-    try {
-      const res = await axios.get(
-        `${API}/api/estructura/${encodeURIComponent(clienteNombre)}/${encodeURIComponent(apartadoNombre)}`
-      );
-      const payload = res?.data;
+      try {
+        const res = await api.get(`/estructura/${encodeURIComponent(clienteNombre)}/${encodeURIComponent(apartadoNombre)}`);
+        const payload = res?.data;
 
-        // Normalizador → devuelve SIEMPRE un array
         const toArray = (x) => {
           if (Array.isArray(x)) return x;
           if (x && typeof x === 'object') {
-            if (Array.isArray(x.carpetas)) return x.carpetas; // 👈 AÑADE ESTO
+            if (Array.isArray(x.carpetas)) return x.carpetas;
             if (Array.isArray(x.data)) return x.data;
             if (Array.isArray(x.rows)) return x.rows;
             if (Array.isArray(x.tree)) return x.tree;
@@ -152,82 +143,75 @@ const DocumentAssigner = () => {
 
         const rawRoots = toArray(payload);
 
-      const mapFiles = (arr = []) =>
-        (arr || []).map(f => ({
-          id: f.id,
-          name: f.nombre,
-          code: f.codigo || 'no disponible',
-          approvalDate: f.fecha_aprobacion ? String(f.fecha_aprobacion).slice(0,10) : 'no disponible',
-          version: f.version,
-          uploadDate: f.fecha_subida ? String(f.fecha_subida).slice(0,10) : 'no disponible',
-          url: f.url_archivo ? `${API}${f.url_archivo}` : undefined,
-        }));
-
-      const mapSubs = (subs = []) =>
-        toArray(subs)
-          .sort((a,b) => (a.orden ?? 0) - (b.orden ?? 0))
-          .map(s => ({
-            id: s.id,
-            name: s.name || s.nombre,
-            files: mapFiles(s.files || s.archivos || []),
-            subfolders: mapSubs(s.subfolders || s.hijos || []),
-            orden: s.orden ?? 0,
+        const mapFiles = (arr = []) =>
+          (arr || []).map(f => ({
+            id: f.id,
+            name: f.nombre,
+            code: f.codigo || 'no disponible',
+            approvalDate: f.fecha_aprobacion ? String(f.fecha_aprobacion).slice(0,10) : 'no disponible',
+            version: f.version,
+            uploadDate: f.fecha_subida ? String(f.fecha_subida).slice(0,10) : 'no disponible',
+            url: f.url_archivo ? `${f.url_archivo}` : undefined,
           }));
 
-      const transformed = rawRoots
-        .sort((a,b) => (a.orden ?? 0) - (b.orden ?? 0))
-        .map(c => ({
-          year: c.name || c.nombre,
-          carpeta_id: c.id,
-          orden: c.orden ?? 0,
-          files: mapFiles(c.files || c.archivos || []),
-          subfolders: mapSubs(c.subfolders || c.hijos || []),
-        }));
+        const mapSubs = (subs = []) =>
+          toArray(subs)
+            .sort((a,b) => (a.orden ?? 0) - (b.orden ?? 0))
+            .map(s => ({
+              id: s.id,
+              name: s.name || s.nombre,
+              files: mapFiles(s.files || s.archivos || []),
+              subfolders: mapSubs(s.subfolders || s.hijos || []),
+              orden: s.orden ?? 0,
+            }));
 
-      setFilesData(transformed);
-    } catch (e) {
-      console.error('Error cargando estructura:', e);
-      setFilesData([]);
-    }
-  };
+        const transformed = rawRoots
+          .sort((a,b) => (a.orden ?? 0) - (b.orden ?? 0))
+          .map(c => ({
+            year: c.name || c.nombre,
+            carpeta_id: c.id,
+            orden: c.orden ?? 0,
+            files: mapFiles(c.files || c.archivos || []),
+            subfolders: mapSubs(c.subfolders || c.hijos || []),
+          }));
 
-  loadTree();
-}, [clients, selectedClient, selectedCategoryName]);
+        setFilesData(transformed);
+      } catch (e) {
+        console.error('Error cargando estructura:', e);
+        setFilesData([]);
+      }
+    };
 
+    loadTree();
+  }, [clients, selectedClient, selectedCategoryName]);
 
   const isCheckboxEnabled = selectedWorkers.length > 0;
 
   const handleAsignar = async () => {
-  try {
-    if (!selectedFiles?.length) {
-      showToast('error', 'Selecciona al menos un archivo');
-      return;
+    try {
+      if (!selectedFiles?.length) {
+        showToast('error', 'Selecciona al menos un archivo');
+        return;
+      }
+      if (!selectedWorkers?.length) {
+        showToast('error', 'Selecciona al menos un usuario');
+        return;
+      }
+
+      const usuario_ids = selectedWorkers.map(Number);
+
+      await Promise.all(
+        selectedFiles.map(f => api.post(`/asignaciones`, { archivo_id: Number(f.id), usuario_ids }))
+      );
+
+      showToast('success', 'Asignación realizada');
+      setSelectedFiles([]);
+      setSelectedWorkers([]);
+    } catch (err) {
+      console.error(err);
+      showToast('error', 'Error asignando archivos');
     }
-    if (!selectedWorkers?.length) {
-      showToast('error', 'Selecciona al menos un usuario');
-      return;
-    }
-
-    const usuario_ids = selectedWorkers.map(Number); // ya vienen del modal
-
-    await Promise.all(
-      selectedFiles.map(f =>
-        axios.post(`${API}/api/asignaciones`, {
-          archivo_id: Number(f.id),
-          usuario_ids
-        })
-      )
-    );
-
-    showToast('success', 'Asignación realizada');
-    setSelectedFiles([]);
-    setSelectedWorkers([]);
-  } catch (err) {
-    console.error(err);
-    showToast('error', 'Error asignando archivos');
-  }
-};
-
+  };
 
   return (
     <div className="p-4 files-section">
@@ -279,7 +263,7 @@ const DocumentAssigner = () => {
       {error && <p className="text-red-600 mb-3">{error}</p>}
 
       <FileTreeWithCheckbox
-        filesData={filesData}              // ← árbol recursivo, no aplanado
+        filesData={filesData}
         selectedFiles={selectedFiles}
         setSelectedFiles={setSelectedFiles}
         isEnabled={isCheckboxEnabled}

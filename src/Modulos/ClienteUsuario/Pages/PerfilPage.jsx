@@ -1,6 +1,7 @@
+//PerfilPage.jsx
 import { useEffect, useRef, useState } from "react";
 import DashboardClienteUsuario from "../Components/DashboardClienteUsuario";
-import { getPerfilClienteUsuario } from "../../../services/trabajadoresService.js";
+import { getPerfilClienteUsuario } from "../../../services/clienteUsuario.js";
 
 export default function PerfilPage() {
   const [worker, setWorker] = useState(null);

@@ -1,3 +1,4 @@
+//trabajadores.routes.js
 const express = require('express');
 const router = express.Router();
 const {
@@ -9,11 +10,12 @@ const {
   getCatalogosTrabajador,
   getPerfilClienteUsuario,
   getTrabajadoresTodosMedico,
-  createTrabajadoresBulk,           // 👈 importar
+  createTrabajadoresBulk,
+  updateTrabajador,           // 👈 importar
 } = require('../controllers/trabajadores.controller');
 const auth = require('../middlewares/auth');
 const maybe = (mw) => (req, res, next) =>
-  process.env.USE_AUTH === 'true' ? mw(req, res, next) : next();
+  process.env.USE_AUTH === 'false' ? next() : mw(req, res, next);
 
 // 👇 Logger de router (primero)
 router.use((req, _res, next) => {
@@ -46,5 +48,6 @@ router.post('/clientes/:cliente_id/trabajadores/bulk', maybe(auth), createTrabaj
 router.get('/clientes/:cliente_id/puestos_trabajo', maybe(auth), getPuestosByCliente);
 router.get('/clientes/:cliente_id/catalogos/trabajador', maybe(auth), getCatalogosTrabajador);
 router.get('/medico/trabajadores', maybe(auth), getTrabajadoresTodosMedico);
+router.put('/trabajadores/:id', maybe(auth), updateTrabajador);
 
 module.exports = router;

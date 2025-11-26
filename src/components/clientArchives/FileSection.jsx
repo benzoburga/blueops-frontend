@@ -10,13 +10,11 @@ import UploadFileModal from './UploadFileModal';
 import { useParams, useSearchParams } from "react-router-dom";
 import VersionListModal from './VersionListModal';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import axios from 'axios';
+import api from '@/services/api';
 import NameInputModal from '@/components/NameInputModal';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 
-const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-
-/* ===== helpers para buscar rutas ===== */
+/* ================== helpers para buscar rutas ================== */
 function findSubPath(list, targetId) {
   if (!targetId) return null;
   const T = String(targetId);
@@ -35,7 +33,6 @@ function findSubPath(list, targetId) {
   }
   return null;
 }
-
 function findFilePath(list, fileId) {
   if (!fileId) return null;
   const T = String(fileId);
@@ -54,7 +51,6 @@ function findFilePath(list, fileId) {
   }
   return null;
 }
-
 /* ¿existe subcarpeta con id = targetId en cualquier nivel? */
 function hasSubId(roots, targetId) {
   const T = String(targetId);
@@ -67,15 +63,29 @@ function hasSubId(roots, targetId) {
   return false;
 }
 
-const getFileIcon = (fileName) => {
-  if (!fileName) return <FaFileAlt />;
-  if (fileName.endsWith('.pdf')) return <FaFilePdf />;
-  if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) return <FaFileWord />;
-  if (fileName.endsWith('.xlsx')) return <FaFileExcel />;
-  if (fileName.endsWith('.pptx')) return <FaFilePowerpoint />;
+/* ============== helpers UI / URL absolutas ================= */
+const getFileIcon = (fileName = "") => {
+  const low = String(fileName).toLowerCase();
+  if (low.endsWith('.pdf')) return <FaFilePdf />;
+  if (low.endsWith('.doc') || low.endsWith('.docx')) return <FaFileWord />;
+  if (low.endsWith('.xls') || low.endsWith('.xlsx')) return <FaFileExcel />;
+  if (low.endsWith('.ppt') || low.endsWith('.pptx')) return <FaFilePowerpoint />;
   return <FaFileAlt />;
 };
 
+const toAbsoluteUrl = (u = "") => {
+  if (!u) return "#";
+  if (/^https?:\/\//i.test(u)) return u;
+  try {
+    // usa el mismo origin que el backend (funciona con proxy y en prod)
+    const base = new URL(api.defaults.baseURL || '/api', window.location.origin);
+    return `${base.origin}${u}`;
+  } catch {
+    return u;
+  }
+};
+
+/* ================== Ítem de archivo ================== */
 const FileItem = ({ file, onDelete, onAddVersion, onViewVersions, onDownload, isHighlighted = false }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const rowRef = useRef(null);
@@ -101,7 +111,7 @@ const FileItem = ({ file, onDelete, onAddVersion, onViewVersions, onDownload, is
         <FaEllipsisV onClick={() => setMenuOpen(!menuOpen)} className="menu-icon" />
         {menuOpen && (
           <div className="dropdown-menu">
-            <p onClick={(e) => { e.stopPropagation(); if (file.url) window.open(file.url, '_blank'); }}>Ver</p>
+            <p onClick={(e) => { e.stopPropagation(); if (file.url) window.open(toAbsoluteUrl(file.url), '_blank'); }}>Ver</p>
             <p onClick={(e) => { e.stopPropagation(); onDelete(); }}>Eliminar</p>
             <p onClick={(e) => { e.stopPropagation(); onDownload(file.id); }}>Descargar</p>
             <p onClick={(e) => { e.stopPropagation(); onAddVersion(); }}>Añadir Versión</p>
@@ -113,6 +123,7 @@ const FileItem = ({ file, onDelete, onAddVersion, onViewVersions, onDownload, is
   );
 };
 
+/* ================== Subcarpeta (recursivo) ================== */
 const SubFolder = ({
   subfolder,
   depth = 0,
@@ -157,32 +168,16 @@ const SubFolder = ({
     file.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const toggleMenu = (e) => {
-    e.stopPropagation();
-    setMenuOpen(!menuOpen);
-  };
+  const toggleMenu = (e) => { e.stopPropagation(); setMenuOpen(!menuOpen); };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuOpen(false);
-      }
+      if (menuRef.current && !menuRef.current.contains(event.target)) setMenuOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => { document.removeEventListener("mousedown", handleClickOutside); };
   }, [menuOpen]);
 
-  // LOGS del render de SubFolder
-  console.log('[SUBFOLDER render]', {
-    subId: String(subfolder.id),
-    open,
-    shouldOpenBySet: !!openIdsSet?.has(String(subfolder.id)),
-    highlightId: String(highlightId),
-    isHighlighted: String(highlightId) === String(subfolder.id),
-    targetType
-  });
-
-  // 🔥 Fuerza visual del highlight (independiente del CSS)
   const headerHighlightStyle = isSubHighlighted ? {
     outline: '2px solid #2dd4bf',
     background: 'rgba(45, 212, 191, 0.18)',
@@ -269,6 +264,7 @@ const SubFolder = ({
   );
 };
 
+/* ================== Carpeta raíz ================== */
 const Folder = ({
   folder,
   searchQuery,
@@ -288,8 +284,8 @@ const Folder = ({
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (openIdsSet) { setOpen(openIdsSet.has(String(folder.carpeta_id))); }
-    else { setOpen(!!defaultOpen); }
+    if (openIdsSet) setOpen(openIdsSet.has(String(folder.carpeta_id)));
+    else setOpen(!!defaultOpen);
   }, [openIdsSet, defaultOpen, folder.carpeta_id]);
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -307,36 +303,20 @@ const Folder = ({
     }
   }, [isFolderHighlighted]);
 
-  const filteredFiles = folder.files
-    ? folder.files.filter(file => file.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    : [];
+  const filteredFiles = (folder.files || []).filter(file =>
+    file.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const toggleMenu = (e) => {
-    e.stopPropagation();
-    setMenuOpen(!menuOpen);
-  };
+  const toggleMenu = (e) => { e.stopPropagation(); setMenuOpen(!menuOpen); };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuOpen(false);
-      }
+      if (menuRef.current && !menuRef.current.contains(event.target)) setMenuOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => { document.removeEventListener("mousedown", handleClickOutside); };
   }, [menuOpen]);
 
-  // LOGS del render de Folder
-  console.log('[FOLDER render]', {
-    folderId: String(folder.carpeta_id),
-    isOpen: !!open,
-    shouldOpenBySet: !!openIdsSet?.has(String(folder.carpeta_id)),
-    highlightId: String(highlightId),
-    isHighlighted: String(highlightId) === String(folder.carpeta_id),
-    targetType
-  });
-
-  // 🔥 Fuerza visual del highlight (independiente del CSS)
   const headerHighlightStyle = isFolderHighlighted ? {
     outline: '2px solid #2dd4bf',
     background: 'rgba(45, 212, 191, 0.18)',
@@ -379,7 +359,7 @@ const Folder = ({
                           subfolder={sub}
                           depth={0}
                           defaultOpen={openIdsSet?.has(String(sub.id))}
-                          highlightId={highlightId}      // ← usa el prop, nada de variables fuera de scope
+                          highlightId={highlightId}
                           targetType={targetType}
                           openIdsSet={openIdsSet}
                           parentFolder={folder}
@@ -419,6 +399,7 @@ const Folder = ({
   );
 };
 
+/* ================== Vista principal ================== */
 const FilesSection = () => {
   const [filesData, setFilesData] = useState([]);
   const [showSubNameModal, setShowSubNameModal] = useState(false);
@@ -427,25 +408,23 @@ const FilesSection = () => {
   const [qs] = useSearchParams();
 
   // --- apertura/resaltado desde el buscador ---
-  const path = qs.get('path') || '';                  // ej: "carpetaId:subId:subId2"
+  const path = qs.get('path') || '';
   const targetTypeQS = (qs.get('t') || 'archivo').toLowerCase(); // 'archivo' | 'carpeta' | 'subcarpeta'
   const highlightIdQS = (qs.get('highlight') ?? '').trim() || null;
 
-  // partes del path (para log)
   const pathParts = useMemo(() =>
     String(path).split(/[:/,\s]+/).filter(Boolean).map(String),
-  [path]);
+    [path]
+  );
 
-  // ids de carpetas/subcarpetas a abrir
   const openIds = useMemo(() => new Set(
     String(path).split(/[:/,\s]+/).filter(Boolean).map(String)
   ), [path]);
 
-  // Set "derivado" (URL + DFS)
   const [derivedOpenIds, setDerivedOpenIds] = useState(openIds);
 
   /* ====== Inferir highlight/type si no viene highlight QS ====== */
-  const [autoType, setAutoType] = useState(null);       // 'carpeta' | 'subcarpeta' | null
+  const [autoType, setAutoType] = useState(null); // 'carpeta' | 'subcarpeta' | null
   const [autoHighlight, setAutoHighlight] = useState(null);
 
   useEffect(() => {
@@ -473,11 +452,9 @@ const FilesSection = () => {
     setAutoHighlight(null);
   }, [filesData, path, highlightIdQS]);
 
-  // Efectivos
   const effectiveTargetType  = (highlightIdQS ? targetTypeQS : (autoType || targetTypeQS));
   const effectiveHighlightId = (highlightIdQS || autoHighlight || null);
 
-  // LOGS principales (cómo interpretamos la URL)
   console.log('[QS]', { path, targetTypeQS, highlightIdQS });
   console.log('[PATH parts]', pathParts);
   console.log('[AUTO]', { autoType, autoHighlight });
@@ -497,20 +474,12 @@ const FilesSection = () => {
 
     if (effectiveHighlightId) {
       let pathArr = null;
-      if (effectiveTargetType === 'subcarpeta') {
-        pathArr = findSubPath(roots, effectiveHighlightId);
-      } else if (effectiveTargetType === 'archivo') {
-        pathArr = findFilePath(roots, effectiveHighlightId);
-      } else if (effectiveTargetType === 'carpeta') {
-        pathArr = [String(effectiveHighlightId)];
-      }
-      if (Array.isArray(pathArr)) {
-        for (const x of pathArr) ids.add(String(x));
-      }
+      if (effectiveTargetType === 'subcarpeta') pathArr = findSubPath(roots, effectiveHighlightId);
+      else if (effectiveTargetType === 'archivo') pathArr = findFilePath(roots, effectiveHighlightId);
+      else if (effectiveTargetType === 'carpeta') pathArr = [String(effectiveHighlightId)];
+      if (Array.isArray(pathArr)) for (const x of pathArr) ids.add(String(x));
     }
     setDerivedOpenIds(ids);
-
-    // LOG de lo que realmente quedará abierto
     console.log('[DERIVED OPEN IDS]', Array.from(ids));
   }, [filesData, openIds, effectiveTargetType, effectiveHighlightId]);
 
@@ -540,25 +509,18 @@ const FilesSection = () => {
   const [fileToDelete, setFileToDelete] = useState(null);
   const [deleteFileForce, setDeleteFileForce] = useState(false);
 
-  // ========= descargas y versiones =========
+  /* ================== descargas y versiones ================== */
+  const dlBase = (api.defaults.baseURL || '/api').replace(/\/$/, '');
   const handleDownloadVersion = (version) => {
     if (!version?.id) return;
-    const url = `${API}/api/archivos/versiones/${version.id}/descargar`;
-    const a = document.createElement('a');
-    a.href = url;
-    a.setAttribute('download', '');
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    window.open(`${dlBase}/archivos/versiones/${version.id}/descargar`, '_blank');
   };
-
   const forceDownload = (archivoId) => {
-    window.open(`${API}/api/archivos/${archivoId}/descargar`, '_blank');
+    window.open(`${dlBase}/archivos/${archivoId}/descargar`, '_blank');
   };
-
   const handleDeleteVersionFromApi = async (version) => {
     try {
-      await axios.delete(`${API}/api/archivos/versiones/${version.id}`);
+      await api.delete(`/archivos/versiones/${version.id}`);
       setSelectedVersionTarget(prev => ({
         ...prev,
         versions: (prev?.versions || []).filter(v => v.id !== version.id)
@@ -573,6 +535,7 @@ const FilesSection = () => {
     }
   };
 
+  /* ================== drag & drop ================== */
   const onDragEnd = async (result) => {
     const { source, destination, type } = result;
     if (!destination) return;
@@ -581,16 +544,12 @@ const FilesSection = () => {
       const reordered = Array.from(filesData);
       const [moved] = reordered.splice(source.index, 1);
       reordered.splice(destination.index, 0, moved);
-
       const reorderedWithOrder = reordered.map((folder, index) => ({ ...folder, orden: index }));
       setFilesData(reorderedWithOrder);
 
       for (let i = 0; i < reorderedWithOrder.length; i++) {
-        try {
-          await axios.put(`${API}/api/carpetas/${reorderedWithOrder[i].carpeta_id}`, { orden: i });
-        } catch (err) {
-          console.error("❌ Error actualizando carpeta:", err);
-        }
+        try { await api.put(`/carpetas/${reorderedWithOrder[i].carpeta_id}`, { orden: i }); }
+        catch (err) { console.error("❌ Error actualizando carpeta:", err); }
       }
     }
 
@@ -609,18 +568,12 @@ const FilesSection = () => {
             const reordered = Array.from(folder.subfolders);
             const [moved] = reordered.splice(source.index, 1);
             reordered.splice(destination.index, 0, moved);
-
             reordered.forEach(async (sub, idx) => {
-              try {
-                await axios.put(`${API}/api/subcarpetas/${sub.id}`, { orden: idx });
-              } catch (err) {
-                console.error("❌ Error actualizando subcarpeta:", err);
-              }
+              try { await api.put(`/subcarpetas/${sub.id}`, { orden: idx }); }
+              catch (err) { console.error("❌ Error actualizando subcarpeta:", err); }
             });
-
             return { ...folder, subfolders: reordered };
           }
-
           if (folder.subfolders?.length) {
             return { ...folder, subfolders: updateSubfoldersRecursively(folder.subfolders) };
           }
@@ -633,34 +586,28 @@ const FilesSection = () => {
     }
   };
 
-  const buildEstructuraURL = () => {
-  const base = (API || '').replace(/\/$/, '');
-  const cli = encodeURIComponent(clienteSlug || '');
-  const ap  = encodeURIComponent(apartadoSlug || ''); // aquí viene "emo"
-  return `${base}/api/estructura/${cli}/${ap}`;
-};
-
-
+  /* ================== carga de estructura ================== */
   const fetchCarpetas = async () => {
     try {
-      const url = buildEstructuraURL();
-      const { data } = await axios.get(url);
+      const cli = encodeURIComponent(clienteSlug || '');
+      const ap  = encodeURIComponent(apartadoSlug || '');
+      const { data } = await api.get(`/estructura/${cli}/${ap}`);
 
       const root = Array.isArray(data) ? data : (data?.carpetas || []);
 
       const mapFiles = (arr = []) =>
-        arr.map(f => ({
+        (arr || []).map(f => ({
           id: f.id,
           name: f.nombre,
           code: f.codigo || "no disponible",
           approvalDate: f.fecha_aprobacion ? String(f.fecha_aprobacion).slice(0, 10) : "no disponible",
           version: f.version,
           uploadDate: f.fecha_subida ? String(f.fecha_subida).slice(0, 10) : "no disponible",
-          url: f.url_archivo ? `${API}${f.url_archivo}` : "#",
+          url: f.url_archivo || "#",  // el backend devuelve '/uploads/...'
         }));
 
       const mapSubs = (subs = []) =>
-        subs
+        (subs || [])
           .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0))
           .map(s => ({
             id: s.id,
@@ -669,7 +616,7 @@ const FilesSection = () => {
             subfolders: mapSubs(s.subfolders || []),
           }));
 
-      const transformed = root
+      const transformed = (root || [])
         .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0))
         .map(c => ({
           year: c.name,
@@ -680,7 +627,6 @@ const FilesSection = () => {
         }));
 
       setFilesData(transformed);
-      // LOG IDs raíz
       console.log('[FILES DATA ROOT IDS]', transformed.map(f => f.carpeta_id));
     } catch (err) {
       console.error("Error cargando estructura:", err);
@@ -688,12 +634,9 @@ const FilesSection = () => {
     }
   };
 
-  useEffect(() => {
-    fetchCarpetas();
-  }, [clienteSlug, apartadoSlug]);
+  useEffect(() => { fetchCarpetas(); }, [clienteSlug, apartadoSlug]);
 
-  // ========= Subir/Versionar/Eliminar =========
-
+  /* ================== Subir/Versionar/Eliminar ================== */
   const findCarpetaId = (folder) => {
     if (folder.carpeta_id) return folder.carpeta_id;
     for (let topFolder of filesData) {
@@ -718,13 +661,11 @@ const FilesSection = () => {
     setSelectedFolder(folder);
     setIsModalOpen(true);
   };
-
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedFolder(null);
     setSelectedVersionTarget(null);
   };
-
   const openVersionModal = (file) => {
     setSelectedFolder(null);
     setSelectedVersionTarget(file);
@@ -734,19 +675,15 @@ const FilesSection = () => {
   const openVersionList = async (file) => {
     try {
       const archivoId = file.id || file.archivo_id;
-      const res = await axios.get(`${API}/api/archivos/${archivoId}/versiones`);
+      const res = await api.get(`/archivos/${archivoId}/versiones`);
 
       const formatDate = (fecha) => {
         if (!fecha) return "No aplica";
-        try {
-          const d = new Date(fecha);
-          return d.toISOString().split("T")[0];
-        } catch {
-          return "No aplica";
-        }
+        try { return new Date(fecha).toISOString().split("T")[0]; }
+        catch { return "No aplica"; }
       };
 
-      const versiones = res.data.map(v => ({
+      const versiones = (res.data || []).map(v => ({
         id: v.id,
         name: v.nombre || "No aplica",
         version: v.version || "No aplica",
@@ -777,7 +714,7 @@ const FilesSection = () => {
       formData.append("fecha_aprobacion", approvalDate || null);
 
       const tipoApartado = decodeSectionName(apartadoSlug);
-      const apartadoRes = await axios.get(`${API}/api/apartados/${clienteSlug}/${tipoApartado}`);
+      const apartadoRes = await api.get(`/apartados/${clienteSlug}/${tipoApartado}`);
       const apartadoId = apartadoRes.data.id;
       formData.append("apartado_cliente_id", apartadoId);
 
@@ -789,7 +726,7 @@ const FilesSection = () => {
         formData.append("subcarpeta_id", selectedFolder.id);
       }
 
-      await axios.post(`${API}/api/archivos`, formData, { headers: { "Content-Type": "multipart/form-data" } });
+      await api.post(`/archivos`, formData, { headers: { "Content-Type": "multipart/form-data" } });
       await fetchCarpetas();
     } catch (error) {
       console.error("❌ Error al subir archivo:", error);
@@ -810,7 +747,7 @@ const FilesSection = () => {
       formData.append("fecha_aprobacion", approvalDate || null);
 
       const archivoId = selectedVersionTarget.id || selectedVersionTarget.archivo_id;
-      await axios.post(`${API}/api/archivos/${archivoId}/version`, formData, {
+      await api.post(`/archivos/${archivoId}/version`, formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
 
@@ -849,26 +786,19 @@ const FilesSection = () => {
   };
 
   const triggerCreateFolder = () => setShowNameModal(true);
-
-  const handleCreateSubfolder = (targetFolder) => {
-    setTargetFolderForSub(targetFolder);
-    setShowSubNameModal(true);
-  };
-
+  const handleCreateSubfolder = (targetFolder) => { setTargetFolderForSub(targetFolder); setShowSubNameModal(true); };
   const handleRename = (target, isSubfolder = false, parentFolder = null) => {
-    setRenameTarget(target);
-    setIsRenamingSub(isSubfolder);
-    setRenameParentFolder(parentFolder);
+    setRenameTarget(target); setIsRenamingSub(isSubfolder); setRenameParentFolder(parentFolder);
   };
 
   const handleDelete = async (target, isSubfolder = false) => {
     if (!target) return;
     try {
       if (!isSubfolder) {
-        await axios.delete(`${API}/api/carpetas/${target.carpeta_id}`);
+        await api.delete(`/carpetas/${target.carpeta_id}`);
         await fetchCarpetas();
       } else {
-        await axios.delete(`${API}/api/subcarpetas/${target.id}`);
+        await api.delete(`/subcarpetas/${target.id}`);
         await fetchCarpetas();
       }
     } catch (error) {
@@ -889,10 +819,10 @@ const FilesSection = () => {
     try {
       if (deleteTarget.isSubfolder) {
         if (!deleteTarget?.id) return alert("Subcarpeta inválida");
-        await axios.delete(`${API}/api/subcarpetas/${deleteTarget.id}?force=true`);
+        await api.delete(`/subcarpetas/${deleteTarget.id}?force=true`);
       } else {
         if (!deleteTarget?.carpeta_id) return alert("Carpeta inválida");
-        await axios.delete(`${API}/api/carpetas/${deleteTarget.carpeta_id}?force=true`);
+        await api.delete(`/carpetas/${deleteTarget.carpeta_id}?force=true`);
       }
       await fetchCarpetas();
     } catch (err) {
@@ -909,7 +839,7 @@ const FilesSection = () => {
     const archivoId = targetFile.id;
 
     try {
-      const { data: versiones } = await axios.get(`${API}/api/archivos/${archivoId}/versiones`);
+      const { data: versiones } = await api.get(`/archivos/${archivoId}/versiones`);
       const tieneVersiones = Array.isArray(versiones) && versiones.length > 0;
 
       setFileToDelete(targetFile);
@@ -933,8 +863,8 @@ const FilesSection = () => {
   const confirmDeleteFile = async () => {
     if (!fileToDelete?.id) return;
     try {
-      const url = `${API}/api/archivos/${fileToDelete.id}${deleteFileForce ? '?force=true' : ''}`;
-      await axios.delete(url);
+      const url = `/archivos/${fileToDelete.id}${deleteFileForce ? '?force=true' : ''}`;
+      await api.delete(url);
       await fetchCarpetas();
     } catch (err) {
       console.error('❌ Error al eliminar archivo:', err);
@@ -963,7 +893,6 @@ const FilesSection = () => {
           }),
         };
       }
-
       if (folder.subfolders?.length) {
         const updatedSubfolders = folder.subfolders.map(sub => {
           if (sub.files?.some(f => f.name === selectedVersionTarget.name)) {
@@ -984,7 +913,6 @@ const FilesSection = () => {
         });
         return { ...folder, subfolders: updatedSubfolders };
       }
-
       return folder;
     });
 
@@ -998,13 +926,10 @@ const FilesSection = () => {
       const safe = Array.isArray(prev.versions) ? prev.versions : [];
       return { ...prev, versions: safe.filter(v => v.id !== ver.id) };
     });
-    try {
-      await fetchCarpetas();
-    } catch (err) {
-      console.warn('No se pudo refrescar carpetas tras borrar versión:', err);
-    }
+    try { await fetchCarpetas(); } catch { /* noop */ }
   };
 
+  /* ================== Render ================== */
   return (
     <>
       <NameInputModal
@@ -1013,10 +938,10 @@ const FilesSection = () => {
         onSubmit={async (name) => {
           try {
             const tipoApartado = decodeSectionName(apartadoSlug);
-            const apartadoRes = await axios.get(`${API}/api/apartados/${clienteSlug}/${tipoApartado}`);
+            const apartadoRes = await api.get(`/apartados/${clienteSlug}/${tipoApartado}`);
             const apartadoId = apartadoRes.data.id;
 
-            const res = await axios.post(`${API}/api/carpetas`, {
+            const res = await api.post(`/carpetas`, {
               nombre: name,
               apartado_cliente_id: apartadoId,
               orden: filesData.length
@@ -1047,13 +972,10 @@ const FilesSection = () => {
           if (!subName || !targetFolderForSub) return;
 
           const carpetaId = findCarpetaId(targetFolderForSub);
-          if (!carpetaId) {
-            alert("No se encontró carpeta_id");
-            return;
-          }
+          if (!carpetaId) { alert("No se encontró carpeta_id"); return; }
 
           try {
-            const res = await axios.post(`${API}/api/subcarpetas`, {
+            const res = await api.post(`/subcarpetas`, {
               nombre: subName,
               carpeta_id: carpetaId,
               orden: targetFolderForSub.subfolders?.length || 0,
@@ -1096,13 +1018,10 @@ const FilesSection = () => {
 
           try {
             if (isRenamingSub) {
-              await axios.put(`${API}/api/subcarpetas/nombre/${renameTarget.id}`, { nombre: newName });
-              if (!renameTarget?.id) {
-                console.error("❌ No se encontró el ID de subcarpeta a renombrar");
-                return;
-              }
+              if (!renameTarget?.id) { console.error("❌ No se encontró el ID de subcarpeta a renombrar"); return; }
+              await api.put(`/subcarpetas/nombre/${renameTarget.id}`, { nombre: newName });
             } else {
-              await axios.put(`${API}/api/carpetas/nombre/${renameTarget.carpeta_id}`, { nombre: newName });
+              await api.put(`/carpetas/nombre/${renameTarget.carpeta_id}`, { nombre: newName });
             }
           } catch (error) {
             console.error("❌ Error al renombrar:", error);
@@ -1111,17 +1030,11 @@ const FilesSection = () => {
 
           const updateNameRecursively = (folders) => {
             return folders.map(folder => {
-              if (!isRenamingSub && folder === renameTarget) {
-                return { ...folder, year: newName };
-              }
+              if (!isRenamingSub && folder === renameTarget) return { ...folder, year: newName };
               const updateSubs = (subs) =>
                 subs.map(sub => {
-                  if (sub.id === renameTarget.id) {
-                    return { ...sub, name: newName };
-                  }
-                  if (sub.subfolders?.length) {
-                    return { ...sub, subfolders: updateSubs(sub.subfolders) };
-                  }
+                  if (sub.id === renameTarget.id) return { ...sub, name: newName };
+                  if (sub.subfolders?.length) return { ...sub, subfolders: updateSubs(sub.subfolders) };
                   return sub;
                 });
               return { ...folder, subfolders: folder.subfolders?.length ? updateSubs(folder.subfolders) : folder.subfolders };
@@ -1209,7 +1122,7 @@ const FilesSection = () => {
                 {(provided) => (
                   <div ref={provided.innerRef} {...provided.droppableProps}>
                     {[...filesData]
-                      .sort((a, b) => a.orden - b.orden)
+                      .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0))
                       .map((folder, index) => (
                         <Draggable
                           key={`folder-${folder.carpeta_id}`}

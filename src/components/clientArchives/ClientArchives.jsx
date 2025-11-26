@@ -99,7 +99,7 @@ const ClientArchives = () => {
   useEffect(() => {
     const fetchClienteId = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/api/clientes");
+        const res = await axios.get("/api/clientes");
         const cliente = res.data.find(
           c => c.nombre_comercial === decodeURIComponent(clientName)
         );
@@ -117,7 +117,7 @@ const ClientArchives = () => {
     const fetchApartados = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3000/api/apartados/cliente/${clienteId}`
+          `/api/apartados/cliente/${clienteId}`
         );
         setApartados(sortApartados(normalizeApartados(res.data || [])));
       } catch (err) {
@@ -133,13 +133,13 @@ const ClientArchives = () => {
   const handleModalSubmit = async (value) => {
     if (!value || !clienteId) return;
     try {
-      await axios.post("http://localhost:3000/api/apartados/crear", {
+      await axios.post("/api/apartados/crear", {
         cliente_id: clienteId,
         nombre: value
       });
       // Refrescar normalizando y ordenando
       const res = await axios.get(
-        `http://localhost:3000/api/apartados/cliente/${clienteId}`
+        `/api/apartados/cliente/${clienteId}`
       );
       setApartados(sortApartados(normalizeApartados(res.data || [])));
       setIsModalOpen(false);
@@ -178,7 +178,7 @@ const ClientArchives = () => {
       if (!target) return alert("Apartado no encontrado.");
 
       await axios.delete(
-        `http://localhost:3000/api/apartados/${clienteId}/${target.tipo_apartado_id}`
+        `/api/apartados/${clienteId}/${target.tipo_apartado_id}`
       );
 
       setApartados(prev =>

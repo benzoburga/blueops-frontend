@@ -1,4 +1,3 @@
-import React from "react";
 import SidebarClienteAdmin from "./SidebarClienteAdmin";
 import { Outlet } from "react-router-dom";
 import "../../ClienteAdministrador/Styles/LayoutClienteAdmin.css";

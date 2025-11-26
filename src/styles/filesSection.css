@@ -337,3 +337,235 @@
   border-radius: 8px;
   animation: headerFlash 1.2s ease-out 1;
 }
+/* ==================================
+   ESTILOS MOBILE ESENCIALES CORREGIDOS
+================================== */
+@media (max-width: 768px) {
+
+  /* Ocultar contenido PC */
+  .table-header,
+  .subfolder-header,
+  .subfolder-content {
+    display: none !important;
+  }
+
+   .files-section {
+    width: 99%;
+    max-width: 430px;
+    margin: 0 auto;
+    padding: 6px 0;
+  }
+
+  
+
+  .search-category-container-mobile {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .mobile-category-select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  .search-container-mobile {
+    width: 100%;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .search-container-mobile input {
+    width: 100%;
+    padding: 10px 36px 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+
+  .mobile-documents-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .mobile-file-row {
+    background: white;
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  .mobile-details-btn {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 7px;
+  }
+
+  /* Modal */
+  .mobile-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 9999;
+  }
+
+  .mobile-modal-content {
+    background: white;
+    width: 90%;
+    border-radius: 14px;
+    padding: 22px;
+  }
+
+    .mobile-modal-content p {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+
+
+  .mobile-modal-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+  }
+
+  .mobile-modal-btn.close {
+    background: #444;
+  }
+
+    .truncate {
+    display: inline-block;
+    max-width: 250px;   /* ajustable */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+  }
+
+   .mobile-folder-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .mobile-folder-name {
+    flex: 1;
+  }
+
+  .mobile-folder-content {
+    display: flex;
+    flex-direction: column;
+    margin-left: 4px;
+    border-left: 2px solid #e5e7eb;
+    padding-left: 6px;
+  }
+
+  .mobile-file-row {
+    background: #fff;
+    margin: 6px 0;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Evitar overflow del nombre */
+  .mobile-file-name {
+    flex: 1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  /* Contenedor general del folder */
+  .mobile-folder-wrapper {
+    margin-bottom: 6px;
+  }
+
+  /* Header de cada carpeta */
+  .mobile-folder-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #f3f4f6; /* gris suave */
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+
+  .mobile-folder-header:hover {
+    background: #e5e7eb;
+    transform: translateX(2px); /* efecto suave */
+  }
+
+  /* Nombre de la carpeta */
+  .mobile-folder-name {
+    flex: 1;
+    font-size: 15px;
+  }
+
+  /* Línea vertical del nivel */
+  .mobile-folder-content {
+    margin-left: 10px;
+    padding-left: 12px;
+    border-left: 2px solid #d1d5db;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  /* Subcarpeta diferenciada con un tono más suave */
+  .mobile-folder-wrapper .mobile-folder-header.open {
+    background: #e8edf5 !important;
+  }
+
+  /* Archivo */
+  .mobile-file-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    margin: 4px 0;
+  }
+
+  .mobile-file-name {
+    flex: 1;
+    font-size: 14px;
+  }
+
+  .mobile-details-btn {
+    padding: 6px 12px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+
+}

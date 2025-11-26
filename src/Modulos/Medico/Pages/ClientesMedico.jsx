@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+//ClientesMedico.jsx
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SidebarMedico from "../Components/SidebarMedico";
 import "../Styles/LayoutMedico.css";
 import { FaSearch } from "react-icons/fa";
-
-const API = (import.meta.env.VITE_API_URL?.replace(/\/+$/, "") || "http://localhost:3000/api");
+import api from "@/services/api";
 
 const ClientesMedico = () => {
   const [isOpen, setIsOpen] = useState(() => {
@@ -26,36 +26,31 @@ const ClientesMedico = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`${API}/clientes`, {
-          credentials: "include",
-          headers: { "Content-Type": "application/json" }
-        });
-        if (!res.ok) throw new Error(`Error ${res.status} al cargar clientes`);
+  let alive = true;
+  (async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/clientes"); // ✅ ya incluye token automáticamente
+      const data = res.data;
 
-        const data = await res.json();
-        // adaptar al shape que usa tu UI
-        const mapped = data.map(c => ({
-          id: c.id,
-          ruc: c.ruc ?? "",
-          nombreComercial: c.nombre_comercial ?? "",
-          representanteLegal: c.representante_nombre || "Sin registrar",
-          empresa: "BLUE OPS", // si no quieres mostrarlo, quita el chip en el UI
-        }));
-        if (alive) setClientes(mapped);
-      } catch (e) {
-        console.error(e);
-        if (alive) setError(e.message || "No se pudo cargar clientes.");
-      } finally {
-        if (alive) setLoading(false);
-      }
-    })();
-    return () => { alive = false; };
-  }, []);
+      const mapped = data.map(c => ({
+        id: c.id,
+        ruc: c.ruc ?? "",
+        nombreComercial: c.nombre_comercial ?? "",
+        representanteLegal: c.representante_nombre || "Sin registrar",
+        empresa: "BLUE OPS",
+      }));
 
+      if (alive) setClientes(mapped);
+    } catch (e) {
+      console.error(e);
+      if (alive) setError(e.message || "No se pudo cargar clientes.");
+    } finally {
+      if (alive) setLoading(false);
+    }
+  })();
+  return () => { alive = false; };
+}, []);
   const rows = useMemo(() => {
     const q = query.toLowerCase().trim();
     if (!q) return clientes;

@@ -1,8 +1,6 @@
 // src/services/trabajadoresService.js
 import api from "./api";
 
-const API = import.meta.env.VITE_API_URL || "http://127.0.0.1:3000/api";
-
 function authHeaders() {
   // 1) intenta con 'token'
   const t1 = localStorage.getItem("token");

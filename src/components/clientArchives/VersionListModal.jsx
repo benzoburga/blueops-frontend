@@ -3,8 +3,6 @@ import '../../styles/VersionListModal/versionListModal.css';
 import { FaEye, FaDownload, FaTrash, FaFolderOpen } from 'react-icons/fa';
 import ModalConfirmAdapter from '@/components/ModalConfirmAdapter';
 
-const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-
 const VersionListModal = ({ file, onClose, onDeleteVersion, onSetAsMain, onDownloadVersion }) => {
   // Estado local con la lista que se pinta
   const [versions, setVersions] = useState(Array.isArray(file?.versions) ? file.versions : []);
@@ -54,7 +52,7 @@ const VersionListModal = ({ file, onClose, onDeleteVersion, onSetAsMain, onDownl
 
   try {
     setBusy(true);
-    const res = await fetch(`${API}/api/archivos/versiones/${ver.id}`, { method: 'DELETE' });
+    const res = await fetch(`/api/archivos/versiones/${ver.id}`, { method: 'DELETE' });
     if (!res.ok) {
       let msg = `HTTP ${res.status}`;
       try { const j = await res.json(); if (j?.message) msg = j.message; } catch {}
@@ -84,7 +82,7 @@ const VersionListModal = ({ file, onClose, onDeleteVersion, onSetAsMain, onDownl
     if (!version?.id) return;
     try {
       setBusy(true);
-      const res = await fetch(`${API}/api/archivos/versiones/${version.id}/vigente`, { method: 'PUT' });
+      const res = await fetch(`/api/archivos/versiones/${version.id}/vigente`, { method: 'PUT' });
       if (!res.ok) {
         let msg = `HTTP ${res.status}`;
         try { const j = await res.json(); if (j?.message) msg = j.message; } catch {}

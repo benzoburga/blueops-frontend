@@ -1,10 +1,15 @@
-//FileList.jsx
 import { useEffect, useMemo, useState, useCallback } from "react";
 import "../../styles/GlobalSearch/fileList.css";
 import { useNavigate } from "react-router-dom";
 import api from "@/services/api";
 
-const FILE_BASE = "http://localhost:3000";
+// Convierte a URL absoluta usando el mismo origen del backend (4000)
+const abs = (u = "") => {
+  if (!u) return "#";
+  if (/^https?:\/\//i.test(u)) return u;          // ya es absoluta
+  if (u.startsWith("/")) return `${window.location.origin}${u}`; // /files..., /uploads...
+  return `/${u}`;                                  // por si viene sin slash
+};
 
 export default function FileList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,15 +18,11 @@ export default function FileList() {
   const navigate = useNavigate();
 
   const norm = useCallback((r) => {
-    const urlArchivo = r.url_archivo
-      ? (String(r.url_archivo).startsWith("http") ? r.url_archivo : `${FILE_BASE}${r.url_archivo}`)
-      : "#";
-
+    const urlArchivo = r.url_archivo ? abs(String(r.url_archivo)) : "#";
     const tipo = r.tipo === "version" ? "archivo" : r.tipo;
 
     return {
       id: r.id,
-      // fuerza unicidad de key:
       uid: `${r.tipo}-${r.id}-${r.archivo_id || 0}-${r.carpeta_id || 0}-${r.subcarpeta_id || 0}-${r.ruta || ""}`,
       tipo,
       nombre: r.nombre,

@@ -1,12 +1,13 @@
-//MedicalModule.jsx
+// MedicalModule.jsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SidebarMedico from "../Components/SidebarMedico";
 import "../Styles/LayoutMedico.css";
 import WorkerDocumentsModal from "../Components/WorkerDocumentsModal";
+import api from "@/services/api";
 
-
-const API = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+// ✅ Base API para prod local (mismo dominio)
+const API = "/api";
 
 const MedicalModule = () => {
   const [isOpen, setIsOpen] = useState(() => {
@@ -14,25 +15,21 @@ const MedicalModule = () => {
     return saved === null ? true : saved === "true";
   });
   const [searchTerm, setSearchTerm] = useState("");
-  const [rows, setRows] = useState([]);          // ← datos reales
+  const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedWorker, setSelectedWorker] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
-// construye la ruta hacia los EMO's de un trabajador
-function buildTargetFromWorker(w) {
-  const clienteId =
-    w.cliente_id ?? w.clienteId ?? w.client_id ?? w.clientId;
-  const trabajadorId =
-    w.trabajador_id ?? w.trabajadorId ?? w.trabId ?? w.id; // suele ser w.id
+  function buildTargetFromWorker(w) {
+    const clienteId = w.cliente_id ?? w.clienteId ?? w.client_id ?? w.clientId;
+    const trabajadorId = w.trabajador_id ?? w.trabajadorId ?? w.trabId ?? w.id;
+    if (!clienteId || !trabajadorId) return null;
+    return `/medico/clientes/${clienteId}/trabajadores/${trabajadorId}/emos`;
+  }
 
-  if (!clienteId || !trabajadorId) return null;
-  return `/medico/clientes/${clienteId}/trabajadores/${trabajadorId}/emos`;
-}
-
-   const toggleSidebar = () => {
+  const toggleSidebar = () => {
     setIsOpen(prev => {
       const next = !prev;
       localStorage.setItem("medico.sidebar_open", String(next));
@@ -40,28 +37,12 @@ function buildTargetFromWorker(w) {
     });
   };
 
-  // Cargar una sola vez (puedes agregar headers Authorization si usas USE_AUTH=true)
   useEffect(() => {
   const fetchData = async () => {
     try {
       setLoading(true);
-
-      const token = localStorage.getItem('token'); // o de tu store
-      const res = await fetch(`${API}/medico/trabajadores`, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        },
-        credentials: 'include'
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        console.error('Backend dijo:', data);
-        setRows([]);              // evita el .map error
-        return;
-      }
+      const res = await api.get("/medico/trabajadores"); // 👈 token va automático
+      const data = res.data || [];
 
       const withDocs = (Array.isArray(data) ? data : []).map(r => ({
         ...r,
@@ -69,7 +50,7 @@ function buildTargetFromWorker(w) {
       }));
       setRows(withDocs);
     } catch (e) {
-      console.error('Error cargando trabajadores:', e);
+      console.error("Error cargando trabajadores:", e);
       setRows([]);
     } finally {
       setLoading(false);
@@ -77,7 +58,6 @@ function buildTargetFromWorker(w) {
   };
   fetchData();
 }, []);
-
 
   const handleFileSelect = (rowIndex, e) => {
     const file = e.target.files[0];
@@ -97,13 +77,13 @@ function buildTargetFromWorker(w) {
 
   const handleDeleteFile = (worker, fileIndex) => {
     worker.documents.splice(fileIndex, 1);
-    setSelectedWorker({ ...worker }); // trigger rerender modal
+    setSelectedWorker({ ...worker });
   };
 
   const filteredWorkers = useMemo(() => {
     const term = searchTerm.toLowerCase();
     return rows.filter(w =>
-      `${w.nombreCompleto ?? ''} ${w.puesto ?? ''} ${w.riesgo ?? ''} ${w.cliente ?? ''}`
+      `${w.nombreCompleto ?? ""} ${w.puesto ?? ""} ${w.riesgo ?? ""} ${w.cliente ?? ""}`
         .toLowerCase()
         .includes(term)
     );
@@ -148,9 +128,9 @@ function buildTargetFromWorker(w) {
                   }}
                 >
                   <td>{w.nombreCompleto}</td>
-                  <td>{w.puesto || '-'}</td>
-                  <td>{w.riesgo || '-'}</td>
-                  <td>{w.cliente || '-'}</td>
+                  <td>{w.puesto || "-"}</td>
+                  <td>{w.riesgo || "-"}</td>
+                  <td>{w.cliente || "-"}</td>
                 </tr>
               ))}
             </tbody>

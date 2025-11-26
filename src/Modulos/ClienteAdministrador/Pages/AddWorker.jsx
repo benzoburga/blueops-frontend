@@ -5,8 +5,6 @@ import axios from "axios";
 import { toast } from "@/lib/toast";
 import BulkWorkersModal from "../Components/BulkWorkersModal";
 
-const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
-
 const getAuthUser = () => {
   try {
     const raw =
@@ -60,7 +58,7 @@ const AddWorker = ({ workers, setWorkers }) => {
 
     axios
       .get(
-        `${API}/api/clientes/${cliente_id}/catalogos/trabajador?incluirGlobales=1`,
+        `/api/clientes/${cliente_id}/catalogos/trabajador?incluirGlobales=1`,
         { headers }
       )
       .then(({ data }) => {
@@ -106,7 +104,7 @@ const AddWorker = ({ workers, setWorkers }) => {
       if (token) headers.Authorization = `Bearer ${token}`;
 
       const { data: created } = await axios.post(
-        `${API}/api/clientes/${cliente_id}/trabajadores`,
+        `/api/clientes/${cliente_id}/trabajadores`,
         {
           ...formData,
           direccion: toNull(formData.direccion),
@@ -212,7 +210,7 @@ const AddWorker = ({ workers, setWorkers }) => {
       if (token) headers.Authorization = `Bearer ${token}`;
 
       const { data } = await axios.post(
-        `${API}/api/clientes/${cliente_id}/trabajadores/bulk`,
+        `/api/clientes/${cliente_id}/trabajadores/bulk`,
         { rows },
         { headers }
       );
