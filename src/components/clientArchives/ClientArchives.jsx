@@ -1,6 +1,6 @@
 // src/pages/ClientArchives.jsx
 import React, { useState, useEffect } from 'react';
-import '../../styles/clientarchives.css';
+import '../../styles/clientArchives.css';
 import ClientArchivesCard from './ClientArchivesCard';
 import { useParams, useNavigate } from "react-router-dom";
 import axios from 'axios';
