@@ -1,38 +1,18 @@
+// src/components/clientArchives/ClientArchives.jsx
 import React, { useState, useEffect } from 'react';
 import '../../styles/clientarchives.css';
 import ClientArchivesCard from './ClientArchivesCard';
 import { useParams, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import {
-  FaChartLine, FaFileAlt, FaChartBar, FaUsers, FaExclamationTriangle, FaClipboardList, FaChalkboardTeacher,
-  FaCalendarAlt, FaFolderOpen, FaMapMarkedAlt, FaSearch, FaThList, FaAmbulance, FaBalanceScale,
-  FaFileMedical, FaFileSignature, FaEye, FaRegFileAlt, FaPlusCircle, FaTrash
+  FaChartLine, FaFileAlt, FaChartBar, FaUsers, FaExclamationTriangle, FaClipboardList,
+  FaChalkboardTeacher, FaCalendarAlt, FaFolderOpen, FaMapMarkedAlt, FaSearch, FaThList,
+  FaAmbulance, FaBalanceScale, FaFileMedical, FaFileSignature, FaEye, FaRegFileAlt,
+  FaPlusCircle, FaTrash
 } from 'react-icons/fa';
 import NameInputModal from '@/components/NameInputModal';
 
-// Slugs por tipo de apartado (controla navegación)
-const slugByTipo = {
-  1: 'linea-base',
-  2: 'politicas-y-reglamentos',
-  3: 'objetivos-y-estadisticas',
-  4: 'comite',
-  5: 'iperc',
-  6: 'procedimientos',
-  7: 'capacitacion',
-  8: 'planes-y-programas',
-  9: 'registros',
-  10: 'mapas-de-riesgo',
-  11: 'auditorias',
-  12: 'matrices',
-  13: 'accidentes-e-incidentes',
-  14: 'fiscalizacion',
-  15: 'emo', // caso especial
-  16: 'docgen',
-  17: 'monitoreos',
-  18: 'informes',
-};
-
-// Ícono + título por tipo
+// Mapa de títulos e iconos
 const tipoApartadoMap = {
   1: { title: "Línea Base", icon: <FaChartLine /> },
   2: { title: "Políticas y Reglamentos", icon: <FaFileAlt /> },
@@ -54,159 +34,98 @@ const tipoApartadoMap = {
   18: { title: "Informes", icon: <FaRegFileAlt /> },
 };
 
-// Orden oficial (1→18). Los custom quedan al final.
-const ORDER = {
-  1: 1,  2: 2,  3: 3,  4: 4,  5: 5,  6: 6,  7: 7,  8: 8,  9: 9,
-  10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16, 17: 17, 18: 18,
-};
-const sortApartados = (list = []) => {
-  const known = [];
-  const custom = [];
-  for (const a of list) {
-    const k = ORDER[a?.tipo_apartado_id];
-    if (k) known.push(a);
-    else custom.push(a);
-  }
-  known.sort((x, y) => ORDER[x.tipo_apartado_id] - ORDER[y.tipo_apartado_id]);
-  custom.sort((x, y) =>
-    (x?.nombre_apartado || '').localeCompare(y?.nombre_apartado || '')
-  );
-  return [...known, ...custom];
+const ORDER = Object.fromEntries([...Array(18)].map((_, i) => [i + 1, i + 1]));
+
+const sortApartados = list => {
+  const def = list.filter(a => ORDER[a.tipo_apartado_id]);
+  const custom = list.filter(a => !ORDER[a.tipo_apartado_id]);
+
+  def.sort((a, b) => ORDER[a.tipo_apartado_id] - ORDER[b.tipo_apartado_id]);
+  custom.sort((a, b) => a.nombre_apartado.localeCompare(b.nombre_apartado));
+
+  return [...def, ...custom];
 };
 
-// Normaliza filas desde backend
-const normalizeApartados = (raw = []) =>
+const normalize = raw =>
   raw.map(r => ({
-    ac_id: Number(r.ac_id ?? r.apartado_cliente_id ?? r.id ?? 0), // id relación apartados_cliente
-    tipo_apartado_id: Number(r.tipo_apartado_id ?? r.tipo_id ?? 0), // id de tipos_apartado
-    nombre_apartado: String(
-      r.nombre_apartado ??
-      r.nombre ??
-      (tipoApartadoMap[r.tipo_apartado_id]?.title || '')
-    ).trim(),
+    ac_id: Number(r.ac_id ?? r.apartado_cliente_id ?? r.id ?? 0),
+    tipo_apartado_id: Number(r.tipo_apartado_id ?? r.tipo_id ?? 0),
+    nombre_apartado: r.nombre_apartado || r.nombre || (tipoApartadoMap[r.tipo_apartado_id]?.title || '')
   }));
 
 const ClientArchives = () => {
   const navigate = useNavigate();
-  const { clientName } = useParams();
-  const [clienteId, setClienteId] = useState(null);
+  const { clientId, clientName } = useParams();
+
   const [apartados, setApartados] = useState([]);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 1) Obtener cliente_id por nombre comercial
-  useEffect(() => {
-    const fetchClienteId = async () => {
-      try {
-        const res = await axios.get("/api/clientes");
-        const cliente = res.data.find(
-          c => c.nombre_comercial === decodeURIComponent(clientName)
-        );
-        if (cliente) setClienteId(cliente.id);
-      } catch (err) {
-        console.error("Error obteniendo cliente:", err);
-      }
-    };
-    fetchClienteId();
-  }, [clientName]);
+  // Ya NO se busca por nombre. clientId llega directo de la URL.
+  const realClientId = Number(clientId);
 
-  // 2) Cargar apartados del cliente
+  // Cargar apartados
   useEffect(() => {
-    if (!clienteId) return;
-    const fetchApartados = async () => {
+    if (!realClientId) return;
+    (async () => {
       try {
-        const res = await axios.get(
-          `/api/apartados/cliente/${clienteId}`
-        );
-        setApartados(sortApartados(normalizeApartados(res.data || [])));
+        const res = await axios.get(`/api/apartados/cliente/${realClientId}`);
+        setApartados(sortApartados(normalize(res.data || [])));
       } catch (err) {
-        console.error("Error cargando apartados del cliente:", err);
+        console.error("Error cargando apartados:", err);
       }
-    };
-    fetchApartados();
-  }, [clienteId]);
+    })();
+  }, [realClientId]);
 
   // Crear apartado personalizado
-  const handleAddSection = () => setIsModalOpen(true);
-
   const handleModalSubmit = async (value) => {
-    if (!value || !clienteId) return;
+    if (!value) return;
+
     try {
       await axios.post("/api/apartados/crear", {
-        cliente_id: clienteId,
+        cliente_id: realClientId,
         nombre: value
       });
-      // Refrescar normalizando y ordenando
-      const res = await axios.get(
-        `/api/apartados/cliente/${clienteId}`
-      );
-      setApartados(sortApartados(normalizeApartados(res.data || [])));
+
+      const res = await axios.get(`/api/apartados/cliente/${realClientId}`);
+      setApartados(sortApartados(normalize(res.data || [])));
       setIsModalOpen(false);
     } catch (err) {
       console.error("❌ Error al crear apartado:", err);
-      alert("Error al crear apartado.");
+      alert("Error al crear apartado");
     }
   };
 
-  // Click sobre tarjeta
   const handleCardClick = (apartado) => {
-    if (apartado === 'Añadir nuevo apartado') { handleAddSection(); return; }
-    if (apartado === 'Eliminar apartado')    { handleToggleDeleteMode(); return; }
+    if (apartado === 'Añadir nuevo apartado') return setIsModalOpen(true);
+    if (apartado === 'Eliminar apartado') return setIsDeleteMode(v => !v);
 
-    const tipoId = apartado?.tipo_apartado_id || 0;
-    const slug = slugByTipo[tipoId] ||
-      String(apartado?.nombre_apartado || '')
-        .toLowerCase()
+    const slug =
+      tipoApartadoMap[apartado.tipo_apartado_id]?.title
+        ?.toLowerCase()
         .replace(/\s+/g, '-')
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, '');
 
-    if (!slug) return;
-    navigate(`/admin/archivos-cliente/${clientName}/${slug}`);
-  };
-
-  const handleToggleDeleteMode = () => setIsDeleteMode(prev => !prev);
-
-  // Eliminar apartado (por tipo_apartado_id)
-  const handleDeleteSection = async (titleToDelete) => {
-    try {
-      const target = apartados.find(a => {
-        const tipo = tipoApartadoMap[a.tipo_apartado_id];
-        const nombre = tipo ? tipo.title : a.nombre_apartado;
-        return nombre === titleToDelete;
-      });
-      if (!target) return alert("Apartado no encontrado.");
-
-      await axios.delete(
-        `/api/apartados/${clienteId}/${target.tipo_apartado_id}`
-      );
-
-      setApartados(prev =>
-        sortApartados(prev.filter(a => a.tipo_apartado_id !== target.tipo_apartado_id))
-      );
-    } catch (error) {
-      console.error("❌ Error al eliminar apartado:", error);
-      alert("Error al eliminar apartado.");
-    }
+    navigate(`/admin/archivos-cliente/${realClientId}/${clientName}/${slug}`);
   };
 
   return (
     <div className="client-archives">
-      <h2>Archivos del Cliente: {clientName?.toUpperCase()}</h2>
+      <h2>Archivos del Cliente: {decodeURIComponent(clientName)?.toUpperCase()}</h2>
 
       <div className="sections-container">
-        {sortApartados(apartados).map((a, index) => {
+        {apartados.map((a, i) => {
           const tipo = tipoApartadoMap[a.tipo_apartado_id];
-          const title = tipo ? tipo.title : (a.nombre_apartado || 'Apartado');
+          const title = tipo ? tipo.title : a.nombre_apartado;
           const icon = tipo ? tipo.icon : <FaFolderOpen />;
 
           return (
             <ClientArchivesCard
-              key={`apartado-${index}`}
+              key={i}
               title={title}
               icon={icon}
               onClick={() => handleCardClick(a)}
               showDelete={isDeleteMode}
-              onDelete={() => handleDeleteSection(title)}
             />
           );
         })}
@@ -214,13 +133,13 @@ const ClientArchives = () => {
         <ClientArchivesCard
           title="Añadir nuevo apartado"
           icon={<FaPlusCircle />}
-          onClick={() => handleCardClick("Añadir nuevo apartado")}
+          onClick={() => setIsModalOpen(true)}
         />
 
         <ClientArchivesCard
           title="Eliminar apartado"
           icon={<FaTrash />}
-          onClick={() => handleCardClick("Eliminar apartado")}
+          onClick={() => setIsDeleteMode(v => !v)}
         />
       </div>
 

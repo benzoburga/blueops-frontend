@@ -18,40 +18,30 @@ import "@/styles/mobile-shell.css";
 export default function AdminDashboard() {
   const isMobile = useIsMobile(1024);
 
-  // MÓVIL: drawer abierto/cerrado
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  // DESKTOP: sidebar colapsado/expandido
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // Si paso a desktop, cierra el drawer (no aplica)
   useEffect(() => { if (!isMobile) setIsDrawerOpen(false); }, [isMobile]);
 
-  // Click del botón del Sidebar:
   const handleToggleSidebar = () => {
-    if (isMobile) {
-      setIsDrawerOpen(v => !v);         // abrir/cerrar drawer en móvil
-    } else {
-      setIsCollapsed(v => !v);          // colapsar/expandir en desktop
-    }
+    if (isMobile) setIsDrawerOpen(v => !v);
+    else setIsCollapsed(v => !v);
   };
 
   return (
     <div className={`app-shell ${!isMobile && isCollapsed ? "collapsed" : ""}`}>
-      {/* Sidebar */}
       <aside className={`sidebar ${isMobile ? (isDrawerOpen ? "open" : "") : "static"}`}>
         <Sidebar
-          // En desktop, el Sidebar necesita saber si está expandido o colapsado
           isOpen={!isMobile ? !isCollapsed : true}
           toggleSidebar={handleToggleSidebar}
           onNavigate={() => { if (isMobile) setIsDrawerOpen(false); }}
         />
       </aside>
 
-      {/* Overlay para cerrar drawer tocando fuera (solo móvil) */}
-      {isMobile && isDrawerOpen && <div className="drawer-overlay" onClick={() => setIsDrawerOpen(false)} />}
+      {isMobile && isDrawerOpen && (
+        <div className="drawer-overlay" onClick={() => setIsDrawerOpen(false)} />
+      )}
 
-      {/* Contenido */}
       <section className="app-content">
         <header className="app-header">
           {isMobile && (
@@ -71,9 +61,12 @@ export default function AdminDashboard() {
             <Route path="publicaciones" element={<PublicacionesList />} />
             <Route path="crear-cliente" element={<CreateClientForm />} />
             <Route path="ver-cliente/:ruc" element={<DataClientForm />} />
+
+            {/* RUTAS CORREGIDAS */}
             <Route path="archivos-cliente" element={<Navigate to="/" replace />} />
-            <Route path="archivos-cliente/:clientName" element={<ClientArchives />} />
-            <Route path="archivos-cliente/:clientName/:sectionName" element={<FileSection />} />
+            <Route path="archivos-cliente/:clientId/:clientName" element={<ClientArchives />} />
+            <Route path="archivos-cliente/:clientId/:clientName/:sectionName" element={<FileSection />} />
+
             <Route path="asignar-documentos" element={<DocumentAssigner />} />
             <Route path="gestor-documentos" element={<DocumentAssigner />} />
           </Routes>

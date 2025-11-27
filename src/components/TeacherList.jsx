@@ -51,7 +51,7 @@ export default function TeacherList({ searchText, isDeleteMode, compact = false 
           key={row.id}
           className="client-compact"
           onClick={() =>
-            navigate(`/admin/archivos-cliente/${encodeURIComponent(row.nombre_comercial)}`)
+            navigate(`/admin/archivos-cliente/${row.id}/${encodeURIComponent(row.nombre_comercial)}`)
           }
           title={row.nombre_comercial}
         >
@@ -91,7 +91,7 @@ export default function TeacherList({ searchText, isDeleteMode, compact = false 
             className="list"
             key={row.id}
             onClick={() =>
-              navigate(`/admin/archivos-cliente/${encodeURIComponent(row.nombre_comercial)}`)
+              navigate(`/admin/archivos-cliente/${row.id}/${encodeURIComponent(row.nombre_comercial)}`)
             }
           >
             <span title={row.nombre_comercial}>{row.nombre_comercial}</span>
