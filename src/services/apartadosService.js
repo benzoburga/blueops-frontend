@@ -9,17 +9,17 @@ function mapRows(rows = []) {
 }
 
 export async function getMisApartados() {
-  // 1) Intento por token (/cliente-usuario)
-  const r1 = await api.get("/apartados/cliente-usuario");
+  // 1) Intento por token
+  const r1 = await api.get("apartados/cliente-usuario");
   let rows = Array.isArray(r1.data) ? r1.data : [];
 
-  // 2) Si llegó vacío, uso el cliente_id del perfil y consulto /cliente/:id
+  // 2) Fallback
   if (!rows.length) {
     try {
-      const perfil = await api.get("/cliente-usuario/perfil"); // ya lo tienes
+      const perfil = await api.get("cliente-usuario/perfil");
       const cid = Number(perfil?.data?.cliente_id || perfil?.data?.cliente?.id || 0);
       if (cid) {
-        const r2 = await api.get(`/apartados/cliente/${cid}`);
+        const r2 = await api.get(`apartados/cliente/${cid}`);
         rows = Array.isArray(r2.data) ? r2.data : [];
       }
     } catch (e) {
@@ -32,7 +32,6 @@ export async function getMisApartados() {
   return mapped;
 }
 
-// compat
 export async function fetchApartadosClienteUsuario() {
   return getMisApartados();
 }
