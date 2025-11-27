@@ -7,7 +7,7 @@ import PerfilPage from "@modulos/ClienteUsuario/Pages/PerfilPage";
 import MyDocuments from "@modulos/ClienteUsuario/Pages/MyDocuments";
 
 import "@styles/sidebar.css";
-import "@modulos/clienteusuario/styles/layoutclienteusuario.css";
+import "@modulos/ClienteUsuario/styles/layoutclienteusuario.css";
 
 const ClienteUsuarioDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
