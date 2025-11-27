@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SidebarMedico from "../Components/SidebarMedico";
-import "../Styles/LayoutMedico.css";
+import "../styles/layoutmedico.css";
 import FilesSectionWorker from "../Components/FilesSectionWorker"; // 👈 fijado (mayúscula)
 import { MOCK_TRABAJADORES } from "../data/mockTrabajadores";
 

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import "../Styles/BulkWorkersModal.css";
+import "../styles/bulkworkersmodal.css";
 
 /* ===== helpers ===== */
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));

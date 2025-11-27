@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SidebarMedico from "../Components/SidebarMedico";
-import "../Styles/LayoutMedico.css";
+import "../styles/layoutmedico.css";
 import { MOCK_TRABAJADORES } from "../data/mockTrabajadores";
 
 const TrabajadorDetalleMedico = () => {

@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "@/services/api";
 import WorkerListModal from "../Components/WorkerListModal";
-import "../Styles/WorkersList.css";
+import "../styles/workerslist.css";
 import { toast } from "@/lib/toast";
 
 // helpers ...

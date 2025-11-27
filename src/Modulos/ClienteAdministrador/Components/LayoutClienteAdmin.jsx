@@ -1,6 +1,6 @@
 import SidebarClienteAdmin from "./SidebarClienteAdmin";
 import { Outlet } from "react-router-dom";
-import "../../ClienteAdministrador/Styles/LayoutClienteAdmin.css";
+import "../../clienteadministrador/styles/layoutclienteadmin.css";
 
 const LayoutClienteAdmin = () => {
   return (

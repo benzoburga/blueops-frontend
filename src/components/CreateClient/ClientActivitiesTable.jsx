@@ -1,5 +1,5 @@
 // components/CreateClient/ClientActivitiesTable.jsx
-import "../../styles/CreateClient/createClient.css";
+import "../../styles/createclient/createclient.css";
 
 export default function ClientActivitiesTable({ actividades, setActividades }) {
   const addRow = () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../styles/GlobalSearch/fileList.css';
+import '../../styles/globalsearch/filelist.css';
 
 const FileTableHeader = () => {
   return (

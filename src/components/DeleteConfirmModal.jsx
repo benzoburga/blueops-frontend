@@ -1,5 +1,5 @@
 import React from "react";
-import '../styles/DeleteConfirmModal.css';
+import '../styles/deleteconfirmmodal.css';
  // crea si deseas estilos bonitos
 
 const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, message }) => {

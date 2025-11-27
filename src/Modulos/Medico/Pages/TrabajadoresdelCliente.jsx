@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SidebarMedico from "../Components/SidebarMedico";
-import "../Styles/LayoutMedico.css";
+import "../styles/layoutmedico.css";
 import { FaSearch, FaUserCircle } from "react-icons/fa";
 import api from "@/services/api";
 

@@ -6,7 +6,7 @@ import SidebarClienteAdmin from "@modulos/ClienteAdministrador/Components/Sideba
 import AddWorker from "@modulos/ClienteAdministrador/Pages/AddWorker";
 import WorkersList from "@modulos/ClienteAdministrador/Pages/WorkersList";
 import DocumentosCliente from "@modulos/ClienteAdministrador/Pages/DocumentosCliente";
-import "@modulos/ClienteAdministrador/Styles/LayoutClienteAdmin.css";
+import "@modulos/clienteadministrador/styles/layoutclienteadmin.css";
 
 import axios from 'axios';
 

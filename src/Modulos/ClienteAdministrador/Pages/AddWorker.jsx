@@ -1,6 +1,6 @@
 //AddWorker.jsx
 import { useRef, useState, useEffect } from "react";
-import "../Styles/AddWorker.css";
+import "../styles/addworker.css";
 import axios from "axios";
 import { toast } from "@/lib/toast";
 import BulkWorkersModal from "../Components/BulkWorkersModal";

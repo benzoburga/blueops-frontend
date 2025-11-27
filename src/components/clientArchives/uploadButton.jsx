@@ -1,6 +1,6 @@
 import React from "react";
 import { FaFolderPlus } from "react-icons/fa";
-import "../../styles/uploadButton.css";
+import "../../styles/uploadbutton.css";
 
 const UploadButton = ({ onOpenCreateFolder }) => {
   return (

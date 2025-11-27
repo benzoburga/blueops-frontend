@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../../styles/UploadFileModal/UploadFileModal.css';
+import '../../styles/uploadfilemodal/uploadfilemodal.css';
 import { FaTimes, FaFolder, FaCalendarAlt, FaPaperclip, FaFileAlt, FaFileExcel, FaFilePowerpoint } from 'react-icons/fa';
 
 const UploadFileModal = ({ isOpen, onClose, handleFileUpload, isVersionUpload = false }) => {

@@ -3,7 +3,7 @@ import { useEffect, useState, useMemo } from "react";
 import api from "@/services/api";
 import { toFileURL } from "@/utils/urls";
 import { FaSearch, FaFilePdf, FaFolderOpen, FaFolder, FaEye, FaDownload } from "react-icons/fa";
-import "@/styles/filesSection.css";
+import "@/styles/filessection.css";
 import MobileFolder from "../Components/MobileFolder";
 
 

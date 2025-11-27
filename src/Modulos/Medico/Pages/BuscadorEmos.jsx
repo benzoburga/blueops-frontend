@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SidebarMedico from "../Components/SidebarMedico";
-import "../Styles/LayoutMedico.css";
+import "../styles/layoutmedico.css";
 import api from "@/services/api";
 
 const PAGE_SIZE = 20;

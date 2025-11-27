@@ -1,7 +1,7 @@
 //ClienteDetalleMedico.jsx
 import { useNavigate, useParams } from "react-router-dom";
 import SidebarMedico from "../Components/SidebarMedico";
-import "../Styles/LayoutMedico.css";
+import "../styles/layoutmedico.css";
 import { MOCK_CLIENTES } from "../data/mockClientes";
 
 const ClienteDetalleMedico = () => {

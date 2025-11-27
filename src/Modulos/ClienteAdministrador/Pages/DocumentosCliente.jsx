@@ -1,7 +1,7 @@
 // src/Modulos/Cliente Administrador/Pages/DocumentosCliente.jsx
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../../../styles/filesSection.css';
+import '../../../styles/filessection.css';
 import { FaSearch, FaFilePdf, FaEllipsisV, FaFolderOpen, FaFolder } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 

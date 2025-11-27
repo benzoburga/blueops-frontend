@@ -5,7 +5,7 @@ import RucSearch from './RucSearch';
 import ClientGeneralData from './ClientGeneralData';
 import ClientWorkerTable from './ClientWorkerTable';
 import ClientAdminTable from './ClientAdminTable';
-import '../../styles/CreateClient/createClient.css';
+import '../../styles/createclient/createclient.css';
 import { toast } from '../../lib/toast';
 import ClientActivitiesTable from './ClientActivitiesTable';
 import api from "@/services/api";

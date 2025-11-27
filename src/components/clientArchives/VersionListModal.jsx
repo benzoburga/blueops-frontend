@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import '../../styles/VersionListModal/versionListModal.css';
+import '../../styles/versionlistmodal/versionlistmodal.css';
 import { FaEye, FaDownload, FaTrash, FaFolderOpen } from 'react-icons/fa';
 import ModalConfirmAdapter from '@/components/ModalConfirmAdapter';
 

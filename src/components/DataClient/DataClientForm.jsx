@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import ClientData from "./ClientData";
 import ClientWorkersTable from "./ClientWorkersTable";
 import ClientBossTable from "./ClientBossTable";
-import "../../styles/DataClient/DataClient.css";
+import "../../styles/dataclient/dataclient.css";
 import { obtenerClientePorRUC } from "@/services/clientesServices";
 
 const DataClientForm = () => {

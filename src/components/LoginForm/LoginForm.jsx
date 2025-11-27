@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import api, { setAuthToken } from '@/services/api';
 import { useNavigate } from 'react-router-dom';
-import '../../styles/LoginForm/LoginForm.css';
+import '../../styles/loginform/loginform.css';
 import { FaUser, FaLock } from 'react-icons/fa';
 
 const NewLoginForm = () => {

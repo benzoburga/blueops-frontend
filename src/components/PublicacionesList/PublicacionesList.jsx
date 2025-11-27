@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import api, { setAuthToken } from "@/services/api";
 import { FiSearch, FiFilePlus, FiUserCheck, FiRefreshCw } from "react-icons/fi";
 import { FaStethoscope } from "react-icons/fa";
-import "@/styles/Publicaciones/PublicacionesList.css";
+import "@/styles/publicaciones/publicacioneslist.css";
 
 /* ========= TIPOS (idénticos al backend) ========= */
 const MOVEMENT_TYPES = {

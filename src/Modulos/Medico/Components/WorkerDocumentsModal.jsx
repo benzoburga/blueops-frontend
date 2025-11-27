@@ -1,6 +1,6 @@
 //WorkerDocumentsModal.jsx
 import { FaDownload, FaTrash, FaEye } from 'react-icons/fa';
-import '../Styles/WorkerDocumentsModal.css';
+import '../styles/workerdocumentsmodal.css';
 
 const WorkerDocumentsModal = ({ isOpen, onClose, worker, onDeleteFile }) => {
   if (!isOpen || !worker) return null;

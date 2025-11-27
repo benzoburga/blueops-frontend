@@ -1,6 +1,6 @@
 // src/components/NameInputModal.jsx
 import React, { useState } from 'react';
-import '../styles/NameInputModal.css';
+import '../styles/nameinputmodal.css';
 
 const NameInputModal = ({ isOpen, onClose, onSubmit, title = "Ingrese el nombre:" }) => {
   const [inputValue, setInputValue] = useState('');

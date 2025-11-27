@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../../styles/clientArchives.css';
+import '../../styles/clientarchives.css';
 import ClientArchivesCard from './ClientArchivesCard';
 import { useParams, useNavigate } from "react-router-dom";
 import axios from 'axios';

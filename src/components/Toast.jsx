@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 // ✅ usa el alias
-import '@/styles/Toast.css';
+import '@/styles/toast.css';
 
 export default function Toast({ type = 'success', message = '', onClose, duration = 2000 }) {
   useEffect(() => {

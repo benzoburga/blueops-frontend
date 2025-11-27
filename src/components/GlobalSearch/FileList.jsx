@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
-import "../../styles/GlobalSearch/fileList.css";
+import "../../styles/globalsearch/filelist.css";
 import { useNavigate } from "react-router-dom";
 import api from "@/services/api";
 

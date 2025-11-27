@@ -1,7 +1,7 @@
 // src/Modulos/Cliente Administrador/Components/WorkerListModal.jsx
 import  { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../../Styles/workerListModal.css';
+import '../../styles/workerlistmodal.css';
 
 const WorkerListModal = ({ clientId, selectedWorkers, setSelectedWorkers, closeModal }) => {
   const [workers, setWorkers] = useState([]);

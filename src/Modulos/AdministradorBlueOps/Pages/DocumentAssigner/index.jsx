@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import api from '@/services/api';
 import FileTreeWithCheckbox from './FileTreeWithCheckbox';
 import WorkerListModal from './WorkerListModal';
-import '../../../../styles/filesSection.css';
+import '../../../../styles/filessection.css';
 import Toast from '@/components/Toast';
 
 // 🔹 Convierte el slug de la ruta al nombre real del apartado (con tildes)

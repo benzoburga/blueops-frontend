@@ -1,6 +1,6 @@
 // FileSection.jsx
 import { useState, useEffect, useRef, useMemo } from 'react';
-import '../../styles/filesSection.css';
+import '../../styles/filessection.css';
 import {
   FaFilePdf, FaFileWord, FaFolderOpen, FaFileExcel, FaFilePowerpoint,
   FaChevronDown, FaChevronRight, FaEllipsisV, FaFileAlt

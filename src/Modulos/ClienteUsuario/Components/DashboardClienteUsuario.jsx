@@ -1,5 +1,5 @@
 import React from "react";
-import "../Styles/DashboardClienteUsuario.css";
+import "../styles/dashboardclienteusuario.css";
 
 const DashboardClienteUsuario = ({ worker }) => {
   if (!worker) return <p>No hay datos del trabajador.</p>;

@@ -15,7 +15,7 @@ import NameInputModal from "@components/NameInputModal";
 import DeleteConfirmModal from "@components/DeleteConfirmModal";
 
 // Estilos de la sección (dejamos igual tu import)
-import "@styles/filesSection.css";
+import "@styles/filessection.css";
 
 /* -------------------------------- helpers UI -------------------------------- */
 const getFileIcon = (fileName = "") => {
