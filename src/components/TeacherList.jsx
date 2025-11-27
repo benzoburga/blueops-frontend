@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import '../styles/teacherlist.css';
 import { BiShow, BiMinusCircle } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '@/services/api';
 import { toast, confirmToast } from '@/lib/toast';
 
 export default function TeacherList({ searchText, isDeleteMode, compact = false }) {
@@ -13,7 +13,7 @@ export default function TeacherList({ searchText, isDeleteMode, compact = false 
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await axios.get(`/api/clientes`);
+        const { data } = await api.get(`/clientes`);
         setTeachers(data || []);
       } catch (e) {
         console.error(e);
@@ -29,7 +29,7 @@ export default function TeacherList({ searchText, isDeleteMode, compact = false 
     const ok = await confirmToast(`¿Archivar al cliente “${row.nombre_comercial}” (RUC ${row.ruc})?`);
     if (!ok) return;
     try {
-      await axios.post(`/api/clientes/${row.id}/archivar`, { user_id: null });
+      await api.post(`/clientes/${row.id}/archivar`, { user_id: null });
       setTeachers(prev => prev.filter(t => t.id !== row.id));
       toast('Cliente archivado', { type: 'success' });
     } catch (e) {
