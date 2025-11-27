@@ -35,10 +35,7 @@ const NewLoginForm = () => {
 
     try {
       // usamos la instancia `api` (baseURL: '/api')
-      const res = await api.post('/login', {
-        dni: String(dni),
-        password,
-      });
+      const res = await api.post('/api/login', { dni, password });
 
       const data  = res?.data || {};
       const user  = data.user;
